@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FeatureFlagApi.SwaggerUI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -36,6 +37,7 @@ namespace FeatureFlagApi
                     Version = "v1",
                     Description = "Simple Development Level FeatureFlag API."
                 });
+                c.OperationFilter<AuthorizationHeader>();
             });
         }
 
