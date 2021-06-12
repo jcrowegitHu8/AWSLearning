@@ -9,7 +9,7 @@ namespace FeatureFlagApi.Model
     {
         public string Name { get; set; }
         
-        public IEnumerable<Rule> Rule { get; set; }
+        public List<Rule> Rules { get; set; }
     }
 
     public class Rule

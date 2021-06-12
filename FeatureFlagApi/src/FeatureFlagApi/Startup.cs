@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FeatureFlagApi.Services;
 using FeatureFlagApi.SwaggerUI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +30,20 @@ namespace FeatureFlagApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            ConfigureSwaggerDocument(services);
+            ConfigureDI(services);
+
+
+        }
+
+        public void ConfigureDI(IServiceCollection services)
+        {
+            services.AddHttpContextAccessor();
+            services.AddScoped<IRulesEngineService, RulesEngineService>();
+        }
+
+        public void ConfigureSwaggerDocument(IServiceCollection services)
+        {
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -40,9 +55,8 @@ namespace FeatureFlagApi
                 c.OperationFilter<AuthorizationHeader>();
             });
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+            // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

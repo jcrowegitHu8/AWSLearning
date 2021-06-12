@@ -12,17 +12,17 @@ namespace FeatureFlagApi.Services
         {
             new Feature{
                 Name="Module1_BillingReportOffAlwaysV2",
-                Rule = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="false"} } },
+                Rules = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="false"} } },
             new Feature{
                 Name="Module1_BillingReportOnAlwaysV2",
-                Rule = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="false"} } },
+                Rules = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="true"} } },
             new Feature{ Name="Module2_OnForSpecificUsers",
-                Rule = new List<Rule>{
+                Rules = new List<Rule>{
                     new Rule { Type = ruleType.jwtParseMatchInList, Meta= "{ Path=$.email, List=testuser1@example.com,testuser2@example.com", }
                 },
             },
             new Feature{ Name="Module2_OnForSpecificUsersForAnEnvironment",
-                Rule = new List<Rule>{
+                Rules = new List<Rule>{
                     new Rule { Type = ruleType.jwtParseMatchInList, Meta= "{ Path=$.email, List=testuser1@example.com,testuser2@example.com", },
                     new Rule { Type = ruleType.httpRequestHeaderExactMatch, Meta="{ Header=x-env, Value=prod", }
                 }
