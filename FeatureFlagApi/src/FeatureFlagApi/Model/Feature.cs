@@ -5,9 +5,14 @@ using System.Threading.Tasks;
 
 namespace FeatureFlagApi.Model
 {
-    public class Feature
+    /// <summary>
+    /// A feature that has searchable key value pairs
+    /// </summary>
+    public class TaggedFeature
     {
         public string Name { get; set; }
-        public bool IsOn { get; set; }
+        public bool DefaultEvaluation { get; set; }
+
+        public IEnumerable<SearchableTag> Tags { get; set; }
     }
 }

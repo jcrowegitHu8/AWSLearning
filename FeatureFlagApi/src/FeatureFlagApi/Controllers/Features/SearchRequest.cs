@@ -16,6 +16,21 @@ namespace FeatureFlagApi.Controllers.Features
         /// "Application":"AngularApp1"
         /// "Module":"Billing"
         /// </remarks>
-        public IDictionary<string,string> tags { get; set; }
+        public IEnumerable<TagSearchPattern> tags { get; set; }
+    }
+
+    public class TagSearchPattern
+    {
+        public string Key { get; set; }
+        public string Value { get; set; }
+        public matching Match { get; set; }
+    }
+
+    public enum matching
+    {
+        exact=0,
+        startsWith=1,
+        contains=2,
+        endsWith=3
     }
 }
