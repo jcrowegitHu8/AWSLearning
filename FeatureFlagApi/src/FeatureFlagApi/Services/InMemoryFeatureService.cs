@@ -18,12 +18,12 @@ namespace FeatureFlagApi.Services
                 Rules = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="true"} } },
             new Feature{ Name="Module2_OnForSpecificUsers",
                 Rules = new List<Rule>{
-                    new Rule { Type = ruleType.jwtParseMatchInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com\"}", }
+                    new Rule { Type = ruleType.jwtParseMatchInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", }
                 },
             },
             new Feature{ Name="Module2_OnForSpecificUsersForAnEnvironment",
                 Rules = new List<Rule>{
-                    new Rule { Type = ruleType.jwtParseMatchInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com\"}", },
+                    new Rule { Type = ruleType.jwtParseMatchInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", },
                     new Rule { Type = ruleType.httpRequestHeaderExactMatch, Meta="{ \"Header\":\"x-env\", \"Value\":\"prod\" }", }
                 }
             },

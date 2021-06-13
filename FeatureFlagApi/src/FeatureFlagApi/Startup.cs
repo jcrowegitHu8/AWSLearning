@@ -52,6 +52,13 @@ namespace FeatureFlagApi
                     Version = "v1",
                     Description = "Simple Development Level FeatureFlag API."
                 });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Use bearer token to authorize",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT"
+                });
                 c.OperationFilter<AuthorizationHeader>();
                 c.OperationFilter<EnvironmentHeader>();
             });

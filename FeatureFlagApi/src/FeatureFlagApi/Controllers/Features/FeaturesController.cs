@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FeatureFlagApi.Controllers.Features;
 using FeatureFlagApi.Model;
 using FeatureFlagApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FeatureFlagApi.Controllers
@@ -26,6 +27,7 @@ namespace FeatureFlagApi.Controllers
             return InMemoryFeatureService._features;
         }
 
+        //[Authorize]
         [HttpPost]
         public EvaluationResponse Evaluate(EvaluationRequest request)
         {

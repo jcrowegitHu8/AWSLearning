@@ -1,10 +1,15 @@
 ﻿using FeatureFlagApi.Controllers.Features;
 using FeatureFlagApi.Model;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FeatureFlagApi.Services
@@ -87,11 +92,75 @@ namespace FeatureFlagApi.Services
             return runningResult;
         }
 
+        private bool TryGetJWTPayloadAsString(string jwtInput, out string result)
+        {
+            var jwtHandler = new JwtSecurityTokenHandler();
+            result = string.Empty;
+            //Check if readable token (string is in a JWT format)
+            var readableToken = jwtHandler.CanReadToken(jwtInput);
+
+            if (readableToken != true)
+            {
+                // "The token doesn't seem to be in a proper JWT format.";
+                return false;
+            }
+            if (readableToken == true)
+            {
+                var token = jwtHandler.ReadJwtToken(jwtInput);
+
+                //Extract the headers of the JWT
+                //var headers = token.Header;
+                //var jwtHeader = "{";
+                //foreach (var h in headers)
+                //{
+                //    jwtHeader += '"' + h.Key + "\":\"" + h.Value + "\",";
+                //}
+                //jwtHeader += "}";
+                //txtJwtOut.Text = "Header:\r\n" + JToken.Parse(jwtHeader).ToString(Formatting.Indented);
+
+                //Extract the payload of the JWT
+                var claims = token.Claims;
+                var jwtPayload = "{";
+                foreach (Claim c in claims)
+                {
+                    jwtPayload += '"' + c.Type + "\":\"" + c.Value + "\",";
+                }
+                jwtPayload += "}";
+                result += JToken.Parse(jwtPayload).ToString(Formatting.Indented);
+                return true;
+            }
+            return false;
+        }
+
         public bool JwtParseMatchInList(string meta)
         {
-            //var jwt = "(the JTW here)";
-            //var handler = new JwtSecurityTokenHandler();
-            //var token = handler.ReadJwtToken(jwt);
+            var metaRuleObject = JsonConvert.DeserializeObject<MetaJwtParseMatchInList>(meta);
+            if (!_httpContextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var outJWT))
+            {
+                return theFeatureIsOff;
+            }
+            var headerValue = outJWT.FirstOrDefault(o => o.StartsWith("Bearer", StringComparison.InvariantCultureIgnoreCase));
+            if (string.IsNullOrWhiteSpace(headerValue))
+            {
+                return theFeatureIsOff;
+            }
+
+            var handler = new JwtSecurityTokenHandler();
+            headerValue = headerValue.Replace("Bearer ", string.Empty);
+            if(!TryGetJWTPayloadAsString(headerValue,  out var jsonString))
+            {
+                return theFeatureIsOff;
+            }
+            var jsonObject = JToken.Parse(jsonString);
+
+            var jsonToken = jsonObject.SelectToken(metaRuleObject.Path);
+            if (jsonToken != null)
+            {
+                if (metaRuleObject.List.Split(',').Contains(jsonToken.ToString()))
+                {
+                    return theFeatureIsOn;
+                }
+            }
 
             return theFeatureIsOff;
         }
