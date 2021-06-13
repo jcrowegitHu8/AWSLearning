@@ -1,4 +1,7 @@
 ﻿using FeatureFlagApi.Controllers.Features;
+using FeatureFlagApi.Model;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,20 +17,29 @@ namespace FeatureFlagApi.Services
     public class RulesEngineService : IRulesEngineService
     {
         private const bool DEFAULT_FOR_ANY_FEATURE_THAT_DOES_NOT_EXIST = false;
+        private const bool theFeatureIsOff = false;
+        private const bool theFeatureIsOn = true;
+
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public RulesEngineService(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
         public EvaluationResponse Run(EvaluationRequest input)
         {
             var result = new EvaluationResponse();
-            if(input == null || input.Features == null || !input.Features.Any())
+            if (input == null || input.Features == null || !input.Features.Any())
             {
                 return result;
             }
 
 
-            foreach(var requestedFeature in input.Features)
+            foreach (var requestedFeature in input.Features)
             {
-                var ruleToRun = InMemoryFeatureService._features.FirstOrDefault(o => 
+                var ruleToRun = InMemoryFeatureService._features.FirstOrDefault(o =>
                 o.Name.Equals(requestedFeature, StringComparison.InvariantCultureIgnoreCase));
-                if(ruleToRun == null)
+                if (ruleToRun == null)
                 {
                     result.Features.Add(new Model.FeatureEvaluationResult
                     {
@@ -50,27 +62,64 @@ namespace FeatureFlagApi.Services
 
         public bool RunAllRules(List<Model.Rule> rules)
         {
-            var theFeatureIsOff = false;
-            var theFeatureIsOn = true;
 
-            foreach(var rule in rules)
+            var runningResult = true;
+            foreach (var rule in rules)
             {
-                switch(rule.Type)
+                switch (rule.Type)
                 {
                     case Model.ruleType.boolean:
-                        if(!Boolean.Parse(rule.Meta))
-                        {
-                            return theFeatureIsOff;
-                        }
-                        else
-                        {
-                            return theFeatureIsOn;
-                        }
+                        runningResult = BooleanRule(rule.Meta);
                         break;
+                    case Model.ruleType.httpRequestHeaderExactMatch:
+                        runningResult = HttpRequestHeaderExactMatchRule(rule.Meta);
+                        break;
+                    case ruleType.jwtParseMatchInList:
+                        runningResult = JwtParseMatchInList(rule.Meta);
+                        break;
+                }
+                if (runningResult == theFeatureIsOff)
+                {
+                    break;
                 }
             }
 
+            return runningResult;
+        }
+
+        public bool JwtParseMatchInList(string meta)
+        {
+            //var jwt = "(the JTW here)";
+            //var handler = new JwtSecurityTokenHandler();
+            //var token = handler.ReadJwtToken(jwt);
+
             return theFeatureIsOff;
+        }
+
+        public bool HttpRequestHeaderExactMatchRule(string meta)
+        {
+            var metaRuleObject = JsonConvert.DeserializeObject<MetaHttpRequestHeaderExactMatch>(meta);
+            if (_httpContextAccessor.HttpContext.Request.Headers.TryGetValue(metaRuleObject.Header, out var outHeaderValue))
+            {
+                var headerValue = outHeaderValue.FirstOrDefault(o => o.Equals(metaRuleObject.Value, StringComparison.InvariantCultureIgnoreCase));
+                if (!string.IsNullOrWhiteSpace(headerValue))
+                {
+                    return theFeatureIsOn;
+                }
+            }
+            return theFeatureIsOff;
+        }
+
+        public bool BooleanRule(string meta)
+        {
+            if (!Boolean.Parse(meta))
+            {
+                return theFeatureIsOff;
+            }
+            else
+            {
+                return theFeatureIsOn;
+            }
         }
 
     }
