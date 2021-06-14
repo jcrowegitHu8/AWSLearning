@@ -26,12 +26,16 @@ namespace FeatureFlagApi.Services
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IFeatureRepository _featureRepository;
+        private readonly IHttpRequestHeaderExactMatchRuleService _httpRequestHeaderExactMatchRuleService;
 
 
-        public RulesEngineService(IHttpContextAccessor httpContextAccessor, IFeatureRepository featureRepository)
+        public RulesEngineService(IHttpContextAccessor httpContextAccessor, 
+            IFeatureRepository featureRepository, 
+            IHttpRequestHeaderExactMatchRuleService httpRequestHeaderExactMatchRuleService)
         {
             _httpContextAccessor = httpContextAccessor;
             _featureRepository = featureRepository;
+            _httpRequestHeaderExactMatchRuleService = httpRequestHeaderExactMatchRuleService;
         }
         public EvaluationResponse Run(EvaluationRequest input)
         {
@@ -79,7 +83,7 @@ namespace FeatureFlagApi.Services
                         runningResult = BooleanRule(rule.Meta);
                         break;
                     case Model.ruleType.httpRequestHeaderExactMatch:
-                        runningResult = HttpRequestHeaderExactMatchRule(rule.Meta);
+                        runningResult = _httpRequestHeaderExactMatchRuleService.Run(rule.Meta);
                         break;
                     case ruleType.jwtPayloadClaimMatchesValueInList:
                         runningResult = JwtPayloadParseMatchInListRule(rule.Meta);
@@ -167,19 +171,7 @@ namespace FeatureFlagApi.Services
             return theFeatureIsOff;
         }
 
-        public bool HttpRequestHeaderExactMatchRule(string meta)
-        {
-            var metaRuleObject = JsonConvert.DeserializeObject<MetaHttpRequestHeaderExactMatch>(meta);
-            if (_httpContextAccessor.HttpContext.Request.Headers.TryGetValue(metaRuleObject.Header, out var outHeaderValue))
-            {
-                var headerValue = outHeaderValue.FirstOrDefault(o => o.Equals(metaRuleObject.Value, StringComparison.InvariantCultureIgnoreCase));
-                if (!string.IsNullOrWhiteSpace(headerValue))
-                {
-                    return theFeatureIsOn;
-                }
-            }
-            return theFeatureIsOff;
-        }
+
 
         public bool BooleanRule(string meta)
         {

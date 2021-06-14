@@ -41,6 +41,8 @@ namespace FeatureFlagApi
             services.AddHttpContextAccessor();
             services.AddScoped<IRulesEngineService, RulesEngineService>();
             services.AddSingleton<IFeatureRepository, InMemoryFeatureService>();
+
+            services.AddScoped<IHttpRequestHeaderExactMatchRuleService, HttpRequestHeaderExactMatchRuleService>();
         }
 
         public void ConfigureSwaggerDocument(IServiceCollection services)
