@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FeatureFlagApi.Controllers.Features
+namespace FeatureFlagApi.Model
 {
 
     public class EvaluationRequest
@@ -16,9 +16,9 @@ namespace FeatureFlagApi.Controllers.Features
 
     public enum matching
     {
-        exact=0,
-        startsWith=1,
-        contains=2,
-        endsWith=3
+        exact = 0,
+        startsWith = 1,
+        contains = 2,
+        endsWith = 3
     }
 }

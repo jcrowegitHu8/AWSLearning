@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FeatureFlagApi.Services
 {
-    public class InMemoryFeatureService
+    public class InMemoryFeatureService: IFeatureRepository
     {
-        internal static readonly List<Feature> _features = new List<Feature>
+        private static readonly List<Feature> _features = new List<Feature>
         {
             new Feature{
                 Name=Constants.TestValues.FeatureNames.ALWAYS_OFF,
@@ -28,5 +28,15 @@ namespace FeatureFlagApi.Services
                 }
             },
         };
+
+        public List<Feature> GetAll()
+        {
+            return _features;
+        }
+    }
+
+    public interface IFeatureRepository
+    {
+        List<Feature> GetAll();
     }
 }

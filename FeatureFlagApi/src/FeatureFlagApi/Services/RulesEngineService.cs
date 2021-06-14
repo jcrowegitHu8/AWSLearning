@@ -1,5 +1,4 @@
-﻿using FeatureFlagApi.Controllers.Features;
-using FeatureFlagApi.Model;
+﻿using FeatureFlagApi.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -26,10 +25,13 @@ namespace FeatureFlagApi.Services
         private const bool theFeatureIsOn = true;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IFeatureRepository _featureRepository;
 
-        public RulesEngineService(IHttpContextAccessor httpContextAccessor)
+
+        public RulesEngineService(IHttpContextAccessor httpContextAccessor, IFeatureRepository featureRepository)
         {
             _httpContextAccessor = httpContextAccessor;
+            _featureRepository = featureRepository;
         }
         public EvaluationResponse Run(EvaluationRequest input)
         {
@@ -42,7 +44,7 @@ namespace FeatureFlagApi.Services
 
             foreach (var requestedFeature in input.Features)
             {
-                var ruleToRun = InMemoryFeatureService._features.FirstOrDefault(o =>
+                var ruleToRun = _featureRepository.GetAll().FirstOrDefault(o =>
                 o.Name.Equals(requestedFeature, StringComparison.InvariantCultureIgnoreCase));
                 if (ruleToRun == null)
                 {
@@ -80,7 +82,7 @@ namespace FeatureFlagApi.Services
                         runningResult = HttpRequestHeaderExactMatchRule(rule.Meta);
                         break;
                     case ruleType.jwtPayloadClaimMatchesValueInList:
-                        runningResult = JwtParseMatchInList(rule.Meta);
+                        runningResult = JwtPayloadParseMatchInListRule(rule.Meta);
                         break;
                 }
                 if (runningResult == theFeatureIsOff)
@@ -132,7 +134,7 @@ namespace FeatureFlagApi.Services
             return false;
         }
 
-        public bool JwtParseMatchInList(string meta)
+        public bool JwtPayloadParseMatchInListRule(string meta)
         {
             var metaRuleObject = JsonConvert.DeserializeObject<MetaJwtParseMatchInList>(meta);
             if (!_httpContextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var outJWT))

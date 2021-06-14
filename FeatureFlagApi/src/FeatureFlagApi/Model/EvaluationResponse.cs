@@ -1,10 +1,9 @@
-﻿using FeatureFlagApi.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FeatureFlagApi.Controllers.Features
+namespace FeatureFlagApi.Model
 {
     public class EvaluationResponse
     {

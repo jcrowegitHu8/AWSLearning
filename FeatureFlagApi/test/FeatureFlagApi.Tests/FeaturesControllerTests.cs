@@ -14,7 +14,6 @@ using Newtonsoft.Json;
 using FeatureFlagApi;
 using FeatureFlagApi.Model;
 using FluentAssertions;
-using FeatureFlagApi.Controllers.Features;
 
 namespace FeatureFlagApi.Tests
 {
