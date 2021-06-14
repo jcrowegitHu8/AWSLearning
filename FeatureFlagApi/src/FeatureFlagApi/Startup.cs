@@ -43,6 +43,8 @@ namespace FeatureFlagApi
             services.AddSingleton<IFeatureRepository, InMemoryFeatureService>();
 
             services.AddScoped<IHttpRequestHeaderExactMatchRuleService, HttpRequestHeaderExactMatchRuleService>();
+            services.AddScoped<IJwtPayloadParseMatchInListRuleService, JwtPayloadParseMatchInListRuleService>();
+            
         }
 
         public void ConfigureSwaggerDocument(IServiceCollection services)

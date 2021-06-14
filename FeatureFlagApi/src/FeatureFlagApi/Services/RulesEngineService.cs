@@ -21,21 +21,22 @@ namespace FeatureFlagApi.Services
     public class RulesEngineService : IRulesEngineService
     {
         private const bool DEFAULT_FOR_ANY_FEATURE_THAT_DOES_NOT_EXIST = false;
-        private const bool theFeatureIsOff = false;
-        private const bool theFeatureIsOn = true;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IFeatureRepository _featureRepository;
         private readonly IHttpRequestHeaderExactMatchRuleService _httpRequestHeaderExactMatchRuleService;
+        private readonly IJwtPayloadParseMatchInListRuleService _jwtPayloadParseMatchInListRuleService;
 
 
-        public RulesEngineService(IHttpContextAccessor httpContextAccessor, 
-            IFeatureRepository featureRepository, 
-            IHttpRequestHeaderExactMatchRuleService httpRequestHeaderExactMatchRuleService)
+        public RulesEngineService(IHttpContextAccessor httpContextAccessor,
+            IFeatureRepository featureRepository,
+            IHttpRequestHeaderExactMatchRuleService httpRequestHeaderExactMatchRuleService, 
+            IJwtPayloadParseMatchInListRuleService jwtPayloadParseMatchInListRuleService)
         {
             _httpContextAccessor = httpContextAccessor;
             _featureRepository = featureRepository;
             _httpRequestHeaderExactMatchRuleService = httpRequestHeaderExactMatchRuleService;
+            _jwtPayloadParseMatchInListRuleService = jwtPayloadParseMatchInListRuleService;
         }
         public EvaluationResponse Run(EvaluationRequest input)
         {
@@ -48,10 +49,14 @@ namespace FeatureFlagApi.Services
 
             foreach (var requestedFeature in input.Features)
             {
-                var ruleToRun = _featureRepository.GetAll().FirstOrDefault(o =>
+                var featureToEvaluate = _featureRepository.GetAll().FirstOrDefault(o =>
                 o.Name.Equals(requestedFeature, StringComparison.InvariantCultureIgnoreCase));
-                if (ruleToRun == null)
+                if (featureToEvaluate == null)
                 {
+                    /* Even if the feature has not been defined
+                     in the backend.  If the request asked for it
+                    we tell them it's 'theFeatureIsOff'
+                    */
                     result.Features.Add(new Model.FeatureEvaluationResult
                     {
                         Name = requestedFeature,
@@ -60,7 +65,7 @@ namespace FeatureFlagApi.Services
                     continue;
                 }
 
-                var rulesResultOfIsFeatureOn = RunAllRules(ruleToRun.Rules);
+                var rulesResultOfIsFeatureOn = RunAllRules(featureToEvaluate.Rules);
                 result.Features.Add(new Model.FeatureEvaluationResult
                 {
                     Name = requestedFeature,
@@ -86,102 +91,32 @@ namespace FeatureFlagApi.Services
                         runningResult = _httpRequestHeaderExactMatchRuleService.Run(rule.Meta);
                         break;
                     case ruleType.jwtPayloadClaimMatchesValueInList:
-                        runningResult = JwtPayloadParseMatchInListRule(rule.Meta);
+                        runningResult = _jwtPayloadParseMatchInListRuleService.Run(rule.Meta);
                         break;
                 }
-                if (runningResult == theFeatureIsOff)
+                if (runningResult == Constants.Common.THIS_FEATURE_IS_OFF)
                 {
+                    /*We only support inclusive AND for the running of multiple rules.
+                     * The moment a rule evaluates to 'theFeatureIsOff'
+                     * we can short-circut the foreach
+                     */
                     break;
                 }
             }
 
             return runningResult;
         }
-
-        private bool TryGetJWTPayloadAsString(string jwtInput, out string result)
-        {
-            var jwtHandler = new JwtSecurityTokenHandler();
-            result = string.Empty;
-            //Check if readable token (string is in a JWT format)
-            var readableToken = jwtHandler.CanReadToken(jwtInput);
-
-            if (readableToken != true)
-            {
-                // "The token doesn't seem to be in a proper JWT format.";
-                return false;
-            }
-            if (readableToken == true)
-            {
-                var token = jwtHandler.ReadJwtToken(jwtInput);
-
-                //Extract the headers of the JWT
-                //var headers = token.Header;
-                //var jwtHeader = "{";
-                //foreach (var h in headers)
-                //{
-                //    jwtHeader += '"' + h.Key + "\":\"" + h.Value + "\",";
-                //}
-                //jwtHeader += "}";
-                //txtJwtOut.Text = "Header:\r\n" + JToken.Parse(jwtHeader).ToString(Formatting.Indented);
-
-                //Extract the payload of the JWT
-                var claims = token.Claims;
-                var jwtPayload = "{";
-                foreach (Claim c in claims)
-                {
-                    jwtPayload += '"' + c.Type + "\":\"" + c.Value + "\",";
-                }
-                jwtPayload += "}";
-                result += JToken.Parse(jwtPayload).ToString(Formatting.Indented);
-                return true;
-            }
-            return false;
-        }
-
-        public bool JwtPayloadParseMatchInListRule(string meta)
-        {
-            var metaRuleObject = JsonConvert.DeserializeObject<MetaJwtParseMatchInList>(meta);
-            if (!_httpContextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var outJWT))
-            {
-                return theFeatureIsOff;
-            }
-            var headerValue = outJWT.FirstOrDefault(o => o.StartsWith("Bearer", StringComparison.InvariantCultureIgnoreCase));
-            if (string.IsNullOrWhiteSpace(headerValue))
-            {
-                return theFeatureIsOff;
-            }
-
-            var handler = new JwtSecurityTokenHandler();
-            headerValue = headerValue.Replace("Bearer ", string.Empty);
-            if(!TryGetJWTPayloadAsString(headerValue,  out var jsonString))
-            {
-                return theFeatureIsOff;
-            }
-            var jsonObject = JToken.Parse(jsonString);
-
-            var jsonToken = jsonObject.SelectToken(metaRuleObject.Path);
-            if (jsonToken != null)
-            {
-                if (metaRuleObject.List.Split(',').Contains(jsonToken.ToString()))
-                {
-                    return theFeatureIsOn;
-                }
-            }
-
-            return theFeatureIsOff;
-        }
-
-
+        
 
         public bool BooleanRule(string meta)
         {
             if (!Boolean.Parse(meta))
             {
-                return theFeatureIsOff;
+                return Constants.Common.THIS_FEATURE_IS_OFF;
             }
             else
             {
-                return theFeatureIsOn;
+                return Constants.Common.THIS_FEATURE_IS_ON;
             }
         }
 
