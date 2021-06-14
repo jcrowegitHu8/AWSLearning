@@ -27,7 +27,7 @@ namespace FeatureFlagApi.Model
         /// The rule value just specifies on/off
         /// </summary>
         boolean = 0,
-        jwtParseMatchInList = 1,
+        jwtPayloadClaimMatchesValueInList = 1,
         httpRequestHeaderExactMatch=2
     }
 

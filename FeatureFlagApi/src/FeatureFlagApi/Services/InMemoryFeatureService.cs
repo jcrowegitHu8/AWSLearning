@@ -11,19 +11,19 @@ namespace FeatureFlagApi.Services
         internal static readonly List<Feature> _features = new List<Feature>
         {
             new Feature{
-                Name="Module1_BillingReportOffAlwaysV2",
+                Name=Constants.TestValues.FeatureNames.ALWAYS_OFF,
                 Rules = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="false"} } },
             new Feature{
-                Name="Module1_BillingReportOnAlwaysV2",
+                Name=Constants.TestValues.FeatureNames.ALWAYS_ON,
                 Rules = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="true"} } },
-            new Feature{ Name="Module2_OnForSpecificUsers",
+            new Feature{ Name=Constants.TestValues.FeatureNames.JWT_EMAIL_PARSE,
                 Rules = new List<Rule>{
-                    new Rule { Type = ruleType.jwtParseMatchInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", }
+                    new Rule { Type = ruleType.jwtPayloadClaimMatchesValueInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", }
                 },
             },
-            new Feature{ Name="Module2_OnForSpecificUsersForAnEnvironment",
+            new Feature{ Name=Constants.TestValues.FeatureNames.JWT_EMAIL_PARSE_AND_ENVIRONMENT_HEADER,
                 Rules = new List<Rule>{
-                    new Rule { Type = ruleType.jwtParseMatchInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", },
+                    new Rule { Type = ruleType.jwtPayloadClaimMatchesValueInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", },
                     new Rule { Type = ruleType.httpRequestHeaderExactMatch, Meta="{ \"Header\":\"x-env\", \"Value\":\"prod\" }", }
                 }
             },

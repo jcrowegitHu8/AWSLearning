@@ -77,7 +77,7 @@ namespace FeatureFlagApi
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Zomato API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FeatureFlag API V1");
 
                 // To serve SwaggerUI at application's root page, set the RoutePrefix property to an empty string.
                 c.RoutePrefix = "swagger";

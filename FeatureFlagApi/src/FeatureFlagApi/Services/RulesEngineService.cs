@@ -79,7 +79,7 @@ namespace FeatureFlagApi.Services
                     case Model.ruleType.httpRequestHeaderExactMatch:
                         runningResult = HttpRequestHeaderExactMatchRule(rule.Meta);
                         break;
-                    case ruleType.jwtParseMatchInList:
+                    case ruleType.jwtPayloadClaimMatchesValueInList:
                         runningResult = JwtParseMatchInList(rule.Meta);
                         break;
                 }
