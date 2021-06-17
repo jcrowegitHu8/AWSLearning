@@ -3,10 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FeatureFlagApi.Extensions;
+using YamlDotNet.Serialization;
+using System.IO;
+using YamlDotNet.Serialization.NamingConventions;
+using System.Reflection;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace FeatureFlagApi.Services
 {
-    public class InMemoryFeatureService: IFeatureRepository
+    public class InMemoryFeatureService : IFeatureRepository
     {
         private static readonly List<Feature> _features = new List<Feature>
         {
@@ -35,6 +42,8 @@ namespace FeatureFlagApi.Services
         }
     }
 
+    
+   
     public interface IFeatureRepository
     {
         List<Feature> GetAll();

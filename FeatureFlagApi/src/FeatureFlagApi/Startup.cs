@@ -32,15 +32,13 @@ namespace FeatureFlagApi
             services.AddControllers();
             ConfigureSwaggerDocument(services);
             ConfigureDI(services);
-
-
         }
 
         public void ConfigureDI(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
             services.AddScoped<IRulesEngineService, RulesEngineService>();
-            services.AddSingleton<IFeatureRepository, InMemoryFeatureService>();
+            services.AddSingleton<IFeatureRepository, YamlFileFeatureService>();
 
             services.AddScoped<IHttpRequestHeaderExactMatchRuleService, HttpRequestHeaderExactMatchRuleService>();
             services.AddScoped<IJwtPayloadParseMatchInListRuleService, JwtPayloadParseMatchInListRuleService>();
