@@ -10,12 +10,10 @@ using Amazon.Lambda.TestUtilities;
 using Amazon.Lambda.APIGatewayEvents;
 
 using Newtonsoft.Json;
-
-using FeatureFlagApi;
 using FeatureFlagApi.Model;
 using FluentAssertions;
 
-namespace FeatureFlagApi.Tests
+namespace FeatureFlagApi.Tests.Controllers
 {
     public class FeaturesControllerTests
     {

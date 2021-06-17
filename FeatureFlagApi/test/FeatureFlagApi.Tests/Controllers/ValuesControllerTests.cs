@@ -11,10 +11,8 @@ using Amazon.Lambda.APIGatewayEvents;
 
 using Newtonsoft.Json;
 
-using FeatureFlagApi;
 
-
-namespace FeatureFlagApi.Tests
+namespace FeatureFlagApi.Tests.Controllers
 {
     public class ValuesControllerTests
     {

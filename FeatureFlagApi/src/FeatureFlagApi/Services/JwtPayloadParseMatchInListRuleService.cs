@@ -16,29 +16,28 @@ namespace FeatureFlagApi.Services
     }
     public class JwtPayloadParseMatchInListRuleService : IJwtPayloadParseMatchInListRuleService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthHeaderService _authHeaderService;
 
-        public JwtPayloadParseMatchInListRuleService(IHttpContextAccessor httpContextAccessor)
+        public JwtPayloadParseMatchInListRuleService(IAuthHeaderService httpContextAccessor)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _authHeaderService = httpContextAccessor;
         }
 
         public bool Run(string meta)
         {
-        
-            var metaRuleObject = JsonConvert.DeserializeObject<MetaJwtParseMatchInList>(meta);
-            if (!_httpContextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var outJWT))
+            if(string.IsNullOrWhiteSpace(meta))
             {
                 return Constants.Common.THIS_FEATURE_IS_OFF;
             }
-            var headerValue = outJWT.FirstOrDefault(o => o.StartsWith("Bearer", StringComparison.InvariantCultureIgnoreCase));
+        
+            var metaRuleObject = JsonConvert.DeserializeObject<MetaJwtParseMatchInList>(meta);
+            var headerValue = _authHeaderService.GetTokenOnly();
             if (string.IsNullOrWhiteSpace(headerValue))
             {
                 return Constants.Common.THIS_FEATURE_IS_OFF;
             }
 
             var handler = new JwtSecurityTokenHandler();
-            headerValue = headerValue.Replace("Bearer ", string.Empty);
             if (!TryGetJWTPayloadAsString(headerValue, out var jsonString))
             {
                 return Constants.Common.THIS_FEATURE_IS_OFF;
