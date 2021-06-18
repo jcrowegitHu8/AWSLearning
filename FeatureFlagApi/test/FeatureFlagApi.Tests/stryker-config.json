@@ -1,0 +1,31 @@
+{
+  "stryker-config": {
+    "reporters": [
+      "progress",
+      "html"
+    ],
+    "log-level": "info",
+    "log-file": true,
+    "timeout-ms": 10000,
+    "project-file": "FeatureFlagApi.csproj",
+    "max-concurrent-test-runners": 4,
+    "threshold-high": 80,
+    "threshold-low": 70,
+    "threshold-break": 60,
+    "mutation-level": "Standard",
+    "mutate": [
+      "!Startup.cs",
+      "!Migrations/*.*",
+      "!ExampleDirectory\\ExampleClass2.cs"
+    ],
+    "excluded-mutations": [
+      "string"
+    ],
+    "ignore-methods": [
+      "*Log*",
+      "ToString",
+      "*HashCode*",
+      "WriteLine"
+    ]
+  }
+}

@@ -25,11 +25,11 @@ namespace FeatureFlagApi.Services
 
         public bool Run(string meta)
         {
-            if(string.IsNullOrWhiteSpace(meta))
+            if (string.IsNullOrWhiteSpace(meta))
             {
                 return Constants.Common.THIS_FEATURE_IS_OFF;
             }
-        
+
             var metaRuleObject = JsonConvert.DeserializeObject<MetaJwtParseMatchInList>(meta);
             var headerValue = _authHeaderService.GetTokenOnly();
             if (string.IsNullOrWhiteSpace(headerValue))
@@ -64,35 +64,38 @@ namespace FeatureFlagApi.Services
             //Check if readable token (string is in a JWT format)
             var readableToken = jwtHandler.CanReadToken(jwtInput);
 
-            if (readableToken != true)
-            {
-                // "The token doesn't seem to be in a proper JWT format.";
-                return false;
-            }
             if (readableToken == true)
             {
-                var token = jwtHandler.ReadJwtToken(jwtInput);
-
-                //Extract the headers of the JWT
-                //var headers = token.Header;
-                //var jwtHeader = "{";
-                //foreach (var h in headers)
-                //{
-                //    jwtHeader += '"' + h.Key + "\":\"" + h.Value + "\",";
-                //}
-                //jwtHeader += "}";
-                //txtJwtOut.Text = "Header:\r\n" + JToken.Parse(jwtHeader).ToString(Formatting.Indented);
-
-                //Extract the payload of the JWT
-                var claims = token.Claims;
-                var jwtPayload = "{";
-                foreach (Claim c in claims)
+                try
                 {
-                    jwtPayload += '"' + c.Type + "\":\"" + c.Value + "\",";
+                    var token = jwtHandler.ReadJwtToken(jwtInput);
+
+                    //Extract the headers of the JWT
+                    //var headers = token.Header;
+                    //var jwtHeader = "{";
+                    //foreach (var h in headers)
+                    //{
+                    //    jwtHeader += '"' + h.Key + "\":\"" + h.Value + "\",";
+                    //}
+                    //jwtHeader += "}";
+                    //txtJwtOut.Text = "Header:\r\n" + JToken.Parse(jwtHeader).ToString(Formatting.Indented);
+
+                    //Extract the payload of the JWT
+                    var claims = token.Claims;
+                    var jwtPayload = "{";
+                    foreach (Claim c in claims)
+                    {
+                        jwtPayload += '"' + c.Type + "\":\"" + c.Value + "\",";
+                    }
+                    jwtPayload += "}";
+                    result += JToken.Parse(jwtPayload).ToString(Formatting.Indented);
+                    return true;
                 }
-                jwtPayload += "}";
-                result += JToken.Parse(jwtPayload).ToString(Formatting.Indented);
-                return true;
+                catch (ArgumentException)
+                {
+                    //Some kind of JWT Garbage token
+                    return false;
+                }
             }
             return false;
         }
