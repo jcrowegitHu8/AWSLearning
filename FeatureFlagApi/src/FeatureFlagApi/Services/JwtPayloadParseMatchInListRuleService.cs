@@ -47,7 +47,8 @@ namespace FeatureFlagApi.Services
             var jsonToken = jsonObject.SelectToken(metaRuleObject.Path);
             if (jsonToken != null)
             {
-                if (metaRuleObject.List.Split(',').Contains(jsonToken.ToString()))
+                if (metaRuleObject.List != null
+                    && metaRuleObject.List.ToUpper().Split(',').Contains(jsonToken.ToString().ToUpper()))
                 {
                     return Constants.Common.THIS_FEATURE_IS_ON;
                 }
