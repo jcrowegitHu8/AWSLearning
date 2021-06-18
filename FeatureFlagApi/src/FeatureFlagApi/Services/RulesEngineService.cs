@@ -22,18 +22,16 @@ namespace FeatureFlagApi.Services
     {
         private const bool DEFAULT_FOR_ANY_FEATURE_THAT_DOES_NOT_EXIST = false;
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IFeatureRepository _featureRepository;
         private readonly IHttpRequestHeaderExactMatchRuleService _httpRequestHeaderExactMatchRuleService;
         private readonly IJwtPayloadParseMatchInListRuleService _jwtPayloadParseMatchInListRuleService;
 
 
-        public RulesEngineService(IHttpContextAccessor httpContextAccessor,
+        public RulesEngineService(
             IFeatureRepository featureRepository,
-            IHttpRequestHeaderExactMatchRuleService httpRequestHeaderExactMatchRuleService, 
+            IHttpRequestHeaderExactMatchRuleService httpRequestHeaderExactMatchRuleService,
             IJwtPayloadParseMatchInListRuleService jwtPayloadParseMatchInListRuleService)
         {
-            _httpContextAccessor = httpContextAccessor;
             _featureRepository = featureRepository;
             _httpRequestHeaderExactMatchRuleService = httpRequestHeaderExactMatchRuleService;
             _jwtPayloadParseMatchInListRuleService = jwtPayloadParseMatchInListRuleService;
@@ -93,6 +91,9 @@ namespace FeatureFlagApi.Services
                     case ruleType.jwtPayloadClaimMatchesValueInList:
                         runningResult = _jwtPayloadParseMatchInListRuleService.Run(rule.Meta);
                         break;
+                    default:
+                        runningResult = false;
+                        break;
                 }
                 if (runningResult == Constants.Common.THIS_FEATURE_IS_OFF)
                 {
@@ -106,7 +107,7 @@ namespace FeatureFlagApi.Services
 
             return runningResult;
         }
-        
+
 
         public bool BooleanRule(string meta)
         {

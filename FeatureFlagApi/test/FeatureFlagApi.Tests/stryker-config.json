@@ -19,7 +19,8 @@
       "!ExampleDirectory\\ExampleClass2.cs"
     ],
     "excluded-mutations": [
-      "string"
+      "string",
+      "linq"
     ],
     "ignore-methods": [
       "*Log*",

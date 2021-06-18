@@ -23,7 +23,7 @@ namespace FeatureFlagApi.Tests.Services
             private const string META_NULL_LIST = "{ \"Path\":\"$.email\"}";
 
             [Fact]
-            public async Task Should_return_true_for_a_valid_meta()
+            public void Should_return_true_for_a_valid_meta()
             {
                 this.Build()
                     .WithValidToken();
@@ -32,7 +32,7 @@ namespace FeatureFlagApi.Tests.Services
             }
 
             [Fact]
-            public async Task Should_return_true_for_a_valid_meta_with_different_casing()
+            public void Should_return_true_for_a_valid_meta_with_different_casing()
             {
                 this.Build()
                     .WithValidToken();
@@ -41,7 +41,7 @@ namespace FeatureFlagApi.Tests.Services
             }
 
             [Fact]
-            public async Task Should_return_false_for_unable_to_read_token()
+            public void Should_return_false_for_unable_to_read_token()
             {
                 this.Build().WithUnableToReadToken();
                 var featureRuleResult = this.Target.Run(VALID_META);
@@ -49,15 +49,15 @@ namespace FeatureFlagApi.Tests.Services
             }
 
             [Fact]
-            public async Task Should_return_false_for_garbage_token_that_throws_an_exception()
+            public void Should_return_false_for_garbage_token_that_throws_an_exception()
             {
-                this.Build().WithUnableToReadToken();
+                this.Build().WithGarbageToken();
                 var featureRuleResult = this.Target.Run(VALID_META);
                 featureRuleResult.Should().BeFalse();
             }
 
             [Fact]
-            public async Task Should_return_false_for_a_no_match_token()
+            public void Should_return_false_for_a_no_match_token()
             {
                 this.Build().WithValidToken();
                 var featureRuleResult = this.Target.Run(VALID_META_NO_MATCH);
@@ -65,7 +65,7 @@ namespace FeatureFlagApi.Tests.Services
             }
 
             [Fact]
-            public async Task Should_return_false_for_null_meta()
+            public void Should_return_false_for_null_meta()
             {
                 this.Build();
                 var featureRuleResult = this.Target.Run(null);
@@ -74,7 +74,7 @@ namespace FeatureFlagApi.Tests.Services
 
 
             [Fact]
-            public async Task Should_return_fales_for_an_empty_list()
+            public void Should_return_fales_for_an_empty_list()
             {
                 this.Build()
                     .WithValidToken();
@@ -83,7 +83,7 @@ namespace FeatureFlagApi.Tests.Services
             }
 
             [Fact]
-            public async Task Should_return_fales_for_null_list()
+            public void Should_return_fales_for_null_list()
             {
                 this.Build()
                     .WithValidToken();
@@ -103,10 +103,7 @@ namespace FeatureFlagApi.Tests.Services
 
         public JwtPayloadParseMatchInListRuleServiceTestBase()
         {
-            Initialize();
-        }
-        public void Initialize()
-        {
+            //Test Initialize
             AuthHeaderServiceMock = A.Fake<IAuthHeaderService>();
         }
 
@@ -143,7 +140,7 @@ namespace FeatureFlagApi.Tests.Services
         {
 
             A.CallTo(() => AuthHeaderServiceMock.GetTokenOnly())
-                .Returns(UNABLE_TO_READ_JWT_TOKEN_ONLY);
+                .Returns(GARBAGE_JWT_TOKEN_ONLY);
 
             return this;
         }

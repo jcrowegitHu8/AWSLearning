@@ -8,6 +8,10 @@ namespace FeatureFlagApi.Model
 
     public class EvaluationRequest
     {
+        public EvaluationRequest()
+        {
+            Features = new List<string>();
+        }
         /// <summary>
         /// The list of features you want the api to tell you if they are ON/OFF
         /// </summary>
