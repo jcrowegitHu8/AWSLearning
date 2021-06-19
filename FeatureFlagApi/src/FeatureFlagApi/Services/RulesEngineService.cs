@@ -23,6 +23,8 @@ namespace FeatureFlagApi.Services
         private const bool DEFAULT_FOR_ANY_FEATURE_THAT_DOES_NOT_EXIST = false;
 
         private readonly IFeatureRepository _featureRepository;
+        //TODO Consider using MediatR here to not get into DI hell as each new rule would be added
+        //making this class untestable.
         private readonly IHttpRequestHeaderExactMatchRuleService _httpRequestHeaderExactMatchRuleService;
         private readonly IJwtPayloadParseMatchInListRuleService _jwtPayloadParseMatchInListRuleService;
 

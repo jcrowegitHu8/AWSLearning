@@ -15,7 +15,8 @@
     "mutation-level": "Standard",
     "mutate": [
       "!Startup.cs",
-      "!Migrations/*.*",
+      "!**/InMemoryFeatureService.cs",
+      "!SwaggerUI/*.*",
       "!ExampleDirectory\\ExampleClass2.cs"
     ],
     "excluded-mutations": [
