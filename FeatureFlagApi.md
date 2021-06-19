@@ -12,5 +12,5 @@
 1) It does not check or enforce any security.
 2) It does not check or enforce a billable feature set.
 
-## What does it look like
-![FeatureFlag API Concept](./media/featureflagapi_concept.png)
+## What does it look like?
+![FeatureFlag API Concept](./media/featureflagapi_concept.PNG)
