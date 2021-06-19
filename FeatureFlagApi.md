@@ -13,4 +13,4 @@
 2) It does not check or enforce a billable feature set.
 
 ## What does it look like
-![](.\media\featureflagapi_concept.png)
+![FeatureFlag API Concept](./media/featureflagapi_concept.png)
