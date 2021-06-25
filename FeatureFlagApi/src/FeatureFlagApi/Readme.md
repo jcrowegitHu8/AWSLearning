@@ -36,6 +36,17 @@ Application Load Balancer.
 
 You may also have a test project depending on the options selected.
 
+## Prerequisits
+
+### Have a aws account with access key and secret.
+
+For testing in a sandbox account where you have full access
+1) Create a user in AWS IAM
+2) Give them 'Programmatic access' and 'AWS Management Console access'
+3) Attach Existing Policy Directly -> 'AdministratorAccess'
+4) Download the credentials CSV.
+
+
 ## Here are some steps to follow from Visual Studio:
 
 To deploy your Serverless application, right click the project in Solution Explorer and select *Publish to AWS Lambda*.
