@@ -46,6 +46,24 @@ For testing in a sandbox account where you have full access
 3) Attach Existing Policy Directly -> 'AdministratorAccess'
 4) Download the credentials CSV.
 
+### Installing the AWS CLI:
+
+Install the  <code>AWS CLI</code> for Windows, Mac, or Linux: https://aws.amazon.com/cli/
+
+<sup>If you want more info on the AWS CLI https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html</sup>
+
+Once installed, you can configure the CLI by running the <code>aws configure</code> command in a terminal or command-line window.
+
+When prompted, enter your <code>AWS Access Key ID</code> and press Enter.
+
+Enter your <code>AWS Secret Access Key</code> when prompted and then press Enter.
+
+For the default region name you should enter your chosen region code (e.g. eu-west-1)  It's easier if this matches where you will be deploying the code for the S3 bucket.
+
+Finally, for the default output format you can just press Enter.
+
+
+
 
 ## Here are some steps to follow from Visual Studio:
 
