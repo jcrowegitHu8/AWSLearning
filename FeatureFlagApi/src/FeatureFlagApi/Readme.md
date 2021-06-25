@@ -36,7 +36,7 @@ Application Load Balancer.
 
 You may also have a test project depending on the options selected.
 
-## Prerequisits
+## Prerequisite
 
 ### Have a aws account with access key and secret.
 
