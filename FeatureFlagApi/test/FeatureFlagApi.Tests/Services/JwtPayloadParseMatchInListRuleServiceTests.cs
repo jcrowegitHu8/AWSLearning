@@ -98,13 +98,13 @@ namespace FeatureFlagApi.Tests.Services
         protected JwtPayloadParseMatchInListRuleService Target { get; set; }
 
 
-        protected IAuthHeaderService AuthHeaderServiceMock { get; set; }
+        protected IRequestHeaderService AuthHeaderServiceMock { get; set; }
 
 
         public JwtPayloadParseMatchInListRuleServiceTestBase()
         {
             //Test Initialize
-            AuthHeaderServiceMock = A.Fake<IAuthHeaderService>();
+            AuthHeaderServiceMock = A.Fake<IRequestHeaderService>();
         }
 
         private const string VALID_JWT_TOKEN_ONLY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJlbWFpbCI6ImpvaG5kb2VAZXhhbXBsZS5jb20ifQ.d6Tv2Xy6UUYdSpTQAKEj3mZJF5Q14OdlT3BbUyuZiuU";

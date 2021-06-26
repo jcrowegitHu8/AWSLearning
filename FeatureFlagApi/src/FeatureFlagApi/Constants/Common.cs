@@ -10,5 +10,7 @@ namespace FeatureFlagApi.Constants
         public const bool THIS_FEATURE_IS_ON = true;
         public const bool THIS_FEATURE_IS_OFF = false;
 
+        public const string DEFAULT_DELIMITER = ",";
+
     }
 }

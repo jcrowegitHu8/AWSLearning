@@ -16,9 +16,9 @@ namespace FeatureFlagApi.Services
     }
     public class JwtPayloadParseMatchInListRuleService : IJwtPayloadParseMatchInListRuleService
     {
-        private readonly IAuthHeaderService _authHeaderService;
+        private readonly IRequestHeaderService _authHeaderService;
 
-        public JwtPayloadParseMatchInListRuleService(IAuthHeaderService httpContextAccessor)
+        public JwtPayloadParseMatchInListRuleService(IRequestHeaderService httpContextAccessor)
         {
             _authHeaderService = httpContextAccessor;
         }
@@ -48,7 +48,8 @@ namespace FeatureFlagApi.Services
             if (jsonToken != null)
             {
                 if (metaRuleObject.List != null
-                    && metaRuleObject.List.ToUpper().Split(',').Contains(jsonToken.ToString().ToUpper()))
+                    && metaRuleObject.List.ToUpper().Split(metaRuleObject.Delimiter)
+                    .Contains(jsonToken.ToString().ToUpper()))
                 {
                     return Constants.Common.THIS_FEATURE_IS_ON;
                 }
@@ -105,7 +106,12 @@ namespace FeatureFlagApi.Services
 
     public class MetaJwtParseMatchInList
     {
+        public MetaJwtParseMatchInList()
+        {
+            Delimiter = Constants.Common.DEFAULT_DELIMITER;
+        }
         public string Path { get; set; }
         public string List { get; set; }
+        public string Delimiter { get; set; }
     }
 }

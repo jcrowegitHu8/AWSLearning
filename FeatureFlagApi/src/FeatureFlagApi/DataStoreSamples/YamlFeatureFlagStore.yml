@@ -16,4 +16,10 @@ Features:
     Meta: '{ "Path":"$.email", "List":"testuser1@example.com,testuser2@example.com,johndoe@example.com"}'
   - Type: httpRequestHeaderExactMatch
     Meta: '{ "Header":"x-env", "Value":"prod" }'
+- Name: Sample_JwtEmailParseAndHeaderParse_MultipleRules2
+  Rules:
+  - Type: jwtPayloadClaimMatchesValueInList
+    Meta: '{ "Path":"$.email", "List":"testuser1@example.com,testuser2@example.com,johndoe@example.com"}'
+  - Type: httpRequestHeaderMatchInList
+    Meta: '{ "Header":"x-env", "Value":"prod" }'
 

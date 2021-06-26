@@ -40,7 +40,7 @@ namespace FeatureFlagApi
             services.AddHttpContextAccessor();
             services.AddScoped<IRulesEngineService, RulesEngineService>();
             services.AddSingleton<IFeatureRepository, YamlFileFeatureService>();
-            services.AddSingleton<IAuthHeaderService, AuthHeaderService>();
+            services.AddSingleton<IRequestHeaderService, RequestHeaderService>();
             services.AddScoped<IHttpRequestHeaderExactMatchRuleService, HttpRequestHeaderExactMatchRuleService>();
             services.AddScoped<IJwtPayloadParseMatchInListRuleService, JwtPayloadParseMatchInListRuleService>();
             

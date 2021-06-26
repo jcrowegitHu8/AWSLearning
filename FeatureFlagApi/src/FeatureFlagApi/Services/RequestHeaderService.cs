@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace FeatureFlagApi.Services
 {
-    public class AuthHeaderService : IAuthHeaderService
+    public class RequestHeaderService : IRequestHeaderService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
 
-        public AuthHeaderService(IHttpContextAccessor httpContextAccessor)
+        public RequestHeaderService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
@@ -31,11 +31,27 @@ namespace FeatureFlagApi.Services
 
         }
 
+        public string GetFirstNotNullOrWhitespaceValue(string key)
+        {
+            if (!_httpContextAccessor.HttpContext.Request.Headers.TryGetValue(key, out var outHeader))
+            {
+                return string.Empty;
+            }
+            var headerValue = outHeader.FirstOrDefault(o =>!string.IsNullOrWhiteSpace(o));
+            if (string.IsNullOrWhiteSpace(headerValue))
+            {
+                return string.Empty;
+            }
+            return headerValue;
+
+        }
+
     }
 
-    public interface IAuthHeaderService
+    public interface IRequestHeaderService
     {
         string GetTokenOnly();
+        string GetFirstNotNullOrWhitespaceValue(string key);
     }
 
 }

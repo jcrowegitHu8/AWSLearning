@@ -33,7 +33,8 @@ namespace FeatureFlagApi.Model
         undefined = -1,
         boolean = 0,
         jwtPayloadClaimMatchesValueInList = 1,
-        httpRequestHeaderExactMatch=2
+        httpRequestHeaderExactMatch=2,
+        httpRequestHeaderMatchInList=3
     }
 
     public class JwtParseMatchInList
