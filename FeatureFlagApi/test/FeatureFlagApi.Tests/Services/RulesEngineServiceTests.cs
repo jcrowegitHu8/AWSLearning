@@ -71,7 +71,7 @@ namespace FeatureFlagApi.Tests.Services
         protected RulesEngineService Target { get; set; }
 
         protected IFeatureRepository FeatureRepositoryMock { get; set; }
-        protected IHttpRequestHeaderExactMatchRuleService HttpRequestHeaderExactMatchRuleServiceMock { get; set; }
+        protected IHttpRequestHeaderMatchInListRuleService HttpRequestHeaderMatchInListRuleServiceMock { get; set; }
         protected IJwtPayloadParseMatchInListRuleService JwtPayloadParseMatchInListRuleServiceMock { get; set; }
 
         protected FeatureStoreModel TestFeatures { get; set; }
@@ -94,7 +94,7 @@ namespace FeatureFlagApi.Tests.Services
             FeatureRepositoryMock = A.Fake<IFeatureRepository>();
             A.CallTo(() => FeatureRepositoryMock.GetAll()).Returns(TestFeatures);
 
-            HttpRequestHeaderExactMatchRuleServiceMock = A.Fake<IHttpRequestHeaderExactMatchRuleService>();
+            HttpRequestHeaderMatchInListRuleServiceMock = A.Fake<IHttpRequestHeaderMatchInListRuleService>();
 
             JwtPayloadParseMatchInListRuleServiceMock = A.Fake<IJwtPayloadParseMatchInListRuleService>();
         }
@@ -103,7 +103,7 @@ namespace FeatureFlagApi.Tests.Services
         {
             this.Target = new RulesEngineService(
                 FeatureRepositoryMock,
-                HttpRequestHeaderExactMatchRuleServiceMock,
+                HttpRequestHeaderMatchInListRuleServiceMock,
                 JwtPayloadParseMatchInListRuleServiceMock);
             return this;
         }

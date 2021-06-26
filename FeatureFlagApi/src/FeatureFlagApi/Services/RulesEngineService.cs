@@ -26,17 +26,17 @@ namespace FeatureFlagApi.Services
         private readonly IFeatureRepository _featureRepository;
         //TODO Consider using MediatR here to not get into DI hell as each new rule would be added
         //making this class untestable.
-        private readonly IHttpRequestHeaderExactMatchRuleService _httpRequestHeaderExactMatchRuleService;
+        private readonly IHttpRequestHeaderMatchInListRuleService _httpRequestHeaderMatchInListRuleService;
         private readonly IJwtPayloadParseMatchInListRuleService _jwtPayloadParseMatchInListRuleService;
 
 
         public RulesEngineService(
             IFeatureRepository featureRepository,
-            IHttpRequestHeaderExactMatchRuleService httpRequestHeaderExactMatchRuleService,
+            IHttpRequestHeaderMatchInListRuleService httpRequestHeaderMatchInListRuleService,
             IJwtPayloadParseMatchInListRuleService jwtPayloadParseMatchInListRuleService)
         {
             _featureRepository = featureRepository;
-            _httpRequestHeaderExactMatchRuleService = httpRequestHeaderExactMatchRuleService;
+            _httpRequestHeaderMatchInListRuleService = httpRequestHeaderMatchInListRuleService;
             _jwtPayloadParseMatchInListRuleService = jwtPayloadParseMatchInListRuleService;
         }
         public EvaluationResponse Run(EvaluationRequest input)
@@ -88,8 +88,8 @@ namespace FeatureFlagApi.Services
                     case Model.ruleType.boolean:
                         runningResult = BooleanRule(rule.Meta);
                         break;
-                    case Model.ruleType.httpRequestHeaderExactMatch:
-                        runningResult = _httpRequestHeaderExactMatchRuleService.Run(rule.Meta);
+                    case Model.ruleType.httpRequestHeaderMatchInList:
+                        runningResult = _httpRequestHeaderMatchInListRuleService.Run(rule.Meta);
                         break;
                     case ruleType.jwtPayloadClaimMatchesValueInList:
                         runningResult = _jwtPayloadParseMatchInListRuleService.Run(rule.Meta);

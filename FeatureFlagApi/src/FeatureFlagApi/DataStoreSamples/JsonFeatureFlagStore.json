@@ -36,8 +36,8 @@
           "Meta": "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}"
         },
         {
-          "Type": "httpRequestHeaderExactMatch",
-          "Meta": "{ \"Header\":\"x-env\", \"Value\":\"prod\" }"
+          "Type": "httpRequestHeaderMatchInList",
+          "Meta": "{ \"Header\":\"x-env\", \"List\":\"prod\" }"
         }
       ]
     }

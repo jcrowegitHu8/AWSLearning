@@ -34,7 +34,7 @@ namespace FeatureFlagApi.Services
                 new Feature{ Name=Constants.TestValues.FeatureNames.JWT_EMAIL_PARSE_AND_ENVIRONMENT_HEADER,
                     Rules = new List<Rule>{
                         new Rule { Type = ruleType.jwtPayloadClaimMatchesValueInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", },
-                        new Rule { Type = ruleType.httpRequestHeaderExactMatch, Meta="{ \"Header\":\"x-env\", \"Value\":\"prod\" }", }
+                        new Rule { Type = ruleType.httpRequestHeaderMatchInList, Meta="{ \"Header\":\"x-env\", \"List\":\"prod\" }", }
                     }
                 },
             }

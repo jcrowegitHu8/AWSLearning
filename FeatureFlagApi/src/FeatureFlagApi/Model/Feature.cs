@@ -33,6 +33,7 @@ namespace FeatureFlagApi.Model
         undefined = -1,
         boolean = 0,
         jwtPayloadClaimMatchesValueInList = 1,
+        [Obsolete("Use httpRequestHeaderMatchInList with the list containing the single value and no delimiter")]
         httpRequestHeaderExactMatch=2,
         httpRequestHeaderMatchInList=3
     }

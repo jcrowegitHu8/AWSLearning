@@ -41,7 +41,7 @@ namespace FeatureFlagApi
             services.AddScoped<IRulesEngineService, RulesEngineService>();
             services.AddSingleton<IFeatureRepository, YamlFileFeatureService>();
             services.AddSingleton<IRequestHeaderService, RequestHeaderService>();
-            services.AddScoped<IHttpRequestHeaderExactMatchRuleService, HttpRequestHeaderExactMatchRuleService>();
+            services.AddScoped<IHttpRequestHeaderMatchInListRuleService, HttpRequestHeaderMatchInListRuleService>();
             services.AddScoped<IJwtPayloadParseMatchInListRuleService, JwtPayloadParseMatchInListRuleService>();
             
         }
