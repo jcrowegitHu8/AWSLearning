@@ -12,7 +12,7 @@ namespace FeatureFlagApi.Services
 {
     public class JsonFileFeatureService : IFeatureRepository
     {
-        public List<Feature> GetAll()
+        public FeatureStoreModel GetAll()
         {
             var assembly = Assembly.GetAssembly(typeof(YamlFileFeatureService));
             var resourceStream = assembly.GetManifestResourceStream("FeatureFlagApi.DataStoreSamples.JsonFeatureFlagStore.json");
@@ -22,7 +22,7 @@ namespace FeatureFlagApi.Services
 
 
                 //yml contains a string containing your YAML
-                var result = JsonConvert.DeserializeObject<List<Feature>>(jsonString);
+                var result = JsonConvert.DeserializeObject<FeatureStoreModel>(jsonString);
                 return result;
             }
         }

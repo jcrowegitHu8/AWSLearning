@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +16,8 @@ namespace FeatureFlagApi.Model
 
     public class Rule
     {
+        [JsonConverter(typeof(StringEnumConverter))]
+
         public ruleType Type { get; set; }
         /// <summary>
         /// Either a simple value or a JSON object to allow the rule to be evaluated

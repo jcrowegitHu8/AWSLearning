@@ -74,7 +74,7 @@ namespace FeatureFlagApi.Tests.Services
         protected IHttpRequestHeaderExactMatchRuleService HttpRequestHeaderExactMatchRuleServiceMock { get; set; }
         protected IJwtPayloadParseMatchInListRuleService JwtPayloadParseMatchInListRuleServiceMock { get; set; }
 
-        protected List<Feature> TestFeatures { get; set; }
+        protected FeatureStoreModel TestFeatures { get; set; }
 
         protected const string INVALID_RULE_TYPE_FEATURE = "INVALID_RULE_TYPE_FEATURE";
 
@@ -83,8 +83,12 @@ namespace FeatureFlagApi.Tests.Services
             //Test Initialize
 
             //Todo just DI the actual YamlFeatureFlagStore
-            TestFeatures = new List<Feature> { 
-                new Feature { Name = INVALID_RULE_TYPE_FEATURE, Rules = new List<Rule> { new Rule { Type = ruleType.undefined } } } 
+            TestFeatures = new FeatureStoreModel
+            {
+                Version = "UnitTestVersion",
+                Features = new List<Feature> {
+                new Feature { Name = INVALID_RULE_TYPE_FEATURE, Rules = new List<Rule> { new Rule { Type = ruleType.undefined } } }
+            }
             };
 
             FeatureRepositoryMock = A.Fake<IFeatureRepository>();
@@ -98,8 +102,8 @@ namespace FeatureFlagApi.Tests.Services
         public RulesEngineServiceTestsBase Build()
         {
             this.Target = new RulesEngineService(
-                FeatureRepositoryMock, 
-                HttpRequestHeaderExactMatchRuleServiceMock, 
+                FeatureRepositoryMock,
+                HttpRequestHeaderExactMatchRuleServiceMock,
                 JwtPayloadParseMatchInListRuleServiceMock);
             return this;
         }

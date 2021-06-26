@@ -62,6 +62,12 @@ For the default region name you should enter your chosen region code (e.g. eu-we
 
 Finally, for the default output format you can just press Enter.
 
+```
+# Note your credential file on windows is located at
+
+%userprofile%\.aws
+```
+
 
 
 

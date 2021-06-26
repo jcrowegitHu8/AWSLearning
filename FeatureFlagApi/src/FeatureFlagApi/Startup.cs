@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FeatureFlagApi.Services;
@@ -64,6 +65,8 @@ namespace FeatureFlagApi
                 });
                 c.OperationFilter<AuthorizationHeader>();
                 c.OperationFilter<EnvironmentHeader>();
+                var filePath = Path.Combine(AppContext.BaseDirectory, "FeatureFlagApi.xml"); 
+                c.IncludeXmlComments(filePath);
             });
         }
             // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -81,8 +84,8 @@ namespace FeatureFlagApi
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Local V1");
-                c.SwaggerEndpoint("Prod/swagger/v1/swagger.json", "Prod API Gateway V1");
-                c.SwaggerEndpoint("Stage/swagger/v1/swagger.json", "Stage API Gateway V1");
+                c.SwaggerEndpoint("/Prod/swagger/v1/swagger.json", "Prod API Gateway V1");
+                c.SwaggerEndpoint("/Stage/swagger/v1/swagger.json", "Stage API Gateway V1");
 
                 // To serve SwaggerUI at application's root page, set the RoutePrefix property to an empty string.
                 c.RoutePrefix = "swagger";

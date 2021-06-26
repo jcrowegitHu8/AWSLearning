@@ -1,4 +1,6 @@
-﻿- Name: Sample_AlwaysOff
+﻿Version: YamlFeatureFlagStoreExample 1.0.2
+Features:
+- Name: Sample_AlwaysOff
   Rules:
   - Meta: false
 - Name: Sample_AlwaysOn

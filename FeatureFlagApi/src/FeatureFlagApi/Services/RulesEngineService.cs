@@ -1,4 +1,5 @@
-﻿using FeatureFlagApi.Model;
+﻿using FeatureFlagApi.Extensions;
+using FeatureFlagApi.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -49,7 +50,7 @@ namespace FeatureFlagApi.Services
 
             foreach (var requestedFeature in input.Features)
             {
-                var featureToEvaluate = _featureRepository.GetAll().FirstOrDefault(o =>
+                var featureToEvaluate = _featureRepository.GetAll().Features?.FirstOrDefault(o =>
                 o.Name.Equals(requestedFeature, StringComparison.InvariantCultureIgnoreCase));
                 if (featureToEvaluate == null)
                 {

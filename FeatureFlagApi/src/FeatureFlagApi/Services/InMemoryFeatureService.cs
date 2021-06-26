@@ -15,37 +15,42 @@ namespace FeatureFlagApi.Services
 {
     public class InMemoryFeatureService : IFeatureRepository
     {
-        private static readonly List<Feature> _features = new List<Feature>
+        private static readonly FeatureStoreModel _features = new FeatureStoreModel
         {
-            new Feature{
-                Name=Constants.TestValues.FeatureNames.ALWAYS_OFF,
-                Rules = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="false"} } },
-            new Feature{
-                Name=Constants.TestValues.FeatureNames.ALWAYS_ON,
-                Rules = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="true"} } },
-            new Feature{ Name=Constants.TestValues.FeatureNames.JWT_EMAIL_PARSE,
-                Rules = new List<Rule>{
-                    new Rule { Type = ruleType.jwtPayloadClaimMatchesValueInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", }
+            Version = "InMemoryFeatureService",
+            Features = new List<Feature>
+            {
+                new Feature{
+                    Name=Constants.TestValues.FeatureNames.ALWAYS_OFF,
+                    Rules = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="false"} } },
+                new Feature{
+                    Name=Constants.TestValues.FeatureNames.ALWAYS_ON,
+                    Rules = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="true"} } },
+                new Feature{ Name=Constants.TestValues.FeatureNames.JWT_EMAIL_PARSE,
+                    Rules = new List<Rule>{
+                        new Rule { Type = ruleType.jwtPayloadClaimMatchesValueInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", }
+                    },
                 },
-            },
-            new Feature{ Name=Constants.TestValues.FeatureNames.JWT_EMAIL_PARSE_AND_ENVIRONMENT_HEADER,
-                Rules = new List<Rule>{
-                    new Rule { Type = ruleType.jwtPayloadClaimMatchesValueInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", },
-                    new Rule { Type = ruleType.httpRequestHeaderExactMatch, Meta="{ \"Header\":\"x-env\", \"Value\":\"prod\" }", }
-                }
-            },
+                new Feature{ Name=Constants.TestValues.FeatureNames.JWT_EMAIL_PARSE_AND_ENVIRONMENT_HEADER,
+                    Rules = new List<Rule>{
+                        new Rule { Type = ruleType.jwtPayloadClaimMatchesValueInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", },
+                        new Rule { Type = ruleType.httpRequestHeaderExactMatch, Meta="{ \"Header\":\"x-env\", \"Value\":\"prod\" }", }
+                    }
+                },
+            }
         };
 
-        public List<Feature> GetAll()
+
+        public FeatureStoreModel GetAll()
         {
             return _features;
         }
     }
 
-    
-   
+
+
     public interface IFeatureRepository
     {
-        List<Feature> GetAll();
+        FeatureStoreModel GetAll();
     }
 }

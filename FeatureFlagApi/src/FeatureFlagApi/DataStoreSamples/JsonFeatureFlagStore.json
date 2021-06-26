@@ -1,42 +1,45 @@
-[
-  {
-    "Name": "Sample_AlwaysOff",
-    "Rules": [
-      {
-        "Type": "boolean",
-        "Meta": "false"
-      }
-    ]
-  },
-  {
-    "Name": "Sample_AlwaysOn",
-    "Rules": [
-      {
-        "Type": "boolean",
-        "Meta": "true"
-      }
-    ]
-  },
-  {
-    "Name": "Sample_JwtEmailParse",
-    "Rules": [
-      {
-        "Type": "jwtPayloadClaimMatchesValueInList",
-        "Meta": "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}"
-      }
-    ]
-  },
-  {
-    "Name": "Sample_JwtEmailParseAndHeaderParse_MultipleRules",
-    "Rules": [
-      {
-        "Type": "jwtPayloadClaimMatchesValueInList",
-        "Meta": "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}"
-      },
-      {
-        "Type": "httpRequestHeaderExactMatch",
-        "Meta": "{ \"Header\":\"x-env\", \"Value\":\"prod\" }"
-      }
-    ]
-  }
-]
+{
+  "Version": "JsonFeatureFlagStoreExample 1.0.2",
+  "Features": [
+    {
+      "Name": "Sample_AlwaysOff",
+      "Rules": [
+        {
+          "Type": "boolean",
+          "Meta": "false"
+        }
+      ]
+    },
+    {
+      "Name": "Sample_AlwaysOn",
+      "Rules": [
+        {
+          "Type": "boolean",
+          "Meta": "true"
+        }
+      ]
+    },
+    {
+      "Name": "Sample_JwtEmailParse",
+      "Rules": [
+        {
+          "Type": "jwtPayloadClaimMatchesValueInList",
+          "Meta": "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}"
+        }
+      ]
+    },
+    {
+      "Name": "Sample_JwtEmailParseAndHeaderParse_MultipleRules",
+      "Rules": [
+        {
+          "Type": "jwtPayloadClaimMatchesValueInList",
+          "Meta": "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}"
+        },
+        {
+          "Type": "httpRequestHeaderExactMatch",
+          "Meta": "{ \"Header\":\"x-env\", \"Value\":\"prod\" }"
+        }
+      ]
+    }
+  ]
+}

@@ -22,14 +22,21 @@ namespace FeatureFlagApi.Controllers
             this.featureRepository = featureRepository;
         }
 
-        // GET api/values
+        /// <summary>
+        /// Get All features currently in the FeatureStore
+        /// </summary>
+        /// <returns>All FeatureStore information</returns>
         [HttpGet]
-        public IEnumerable<Feature> Get()
+        public FeatureStoreModel Get()
         {
             return featureRepository.GetAll();
         }
 
-        //[Authorize]
+        /// <summary>
+        /// Determine if the list of requested features is ON/OFF
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>Just the list of featues and their ON/OFF status</returns>
         [HttpPost]
         public EvaluationResponse Evaluate(EvaluationRequest request)
         {

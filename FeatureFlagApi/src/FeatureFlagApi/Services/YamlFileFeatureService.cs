@@ -12,7 +12,7 @@ namespace FeatureFlagApi.Services
 {
     public class YamlFileFeatureService : IFeatureRepository
     {
-        public List<Feature> GetAll()
+        public FeatureStoreModel GetAll()
         {
             var assembly = Assembly.GetAssembly(typeof(YamlFileFeatureService));
             var resourceStream = assembly.GetManifestResourceStream("FeatureFlagApi.DataStoreSamples.YamlFeatureFlagStore.yml");
@@ -23,7 +23,7 @@ namespace FeatureFlagApi.Services
                 var deserializer = new DeserializerBuilder().Build();
 
                 //yml contains a string containing your YAML
-                var result = deserializer.Deserialize<List<Feature>>(ymlString);
+                var result = deserializer.Deserialize<FeatureStoreModel>(ymlString);
                 return result;
             }
         }
