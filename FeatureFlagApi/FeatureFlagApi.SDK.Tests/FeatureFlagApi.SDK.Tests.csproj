@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FeatureFlagApi.SDK\FeatureFlagApi.SDK.csproj" />
-    <ProjectReference Include="..\src\FeatureFlagApi\FeatureFlagApi.csproj" />
   </ItemGroup>
 
 </Project>
