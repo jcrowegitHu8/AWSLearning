@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using cts = FeatureFlag.Shared.Constants;
 
 namespace FeatureFlagApi.Services
 {
@@ -30,7 +31,7 @@ namespace FeatureFlagApi.Services
         {
             if(meta == null)
             {
-                return Constants.Common.THIS_FEATURE_IS_OFF;
+                return cts.Common.THIS_FEATURE_IS_OFF;
             }
             var metaRuleObject = JsonConvert.DeserializeObject<MetaHttpRequestHeaderMatchInList>(meta);
             var headerValue = _httpContextAccessor.GetFirstNotNullOrWhitespaceValue(metaRuleObject.Header);
@@ -39,10 +40,10 @@ namespace FeatureFlagApi.Services
                 var compareList = metaRuleObject.List.ToUpper().Split(metaRuleObject.Delimiter);
                 if (compareList.Contains(headerValue.ToUpper()))
                 {
-                    return Constants.Common.THIS_FEATURE_IS_ON;
+                    return cts.Common.THIS_FEATURE_IS_ON;
                 }
             }
-            return Constants.Common.THIS_FEATURE_IS_OFF;
+            return cts.Common.THIS_FEATURE_IS_OFF;
         }
     }
 
@@ -50,7 +51,7 @@ namespace FeatureFlagApi.Services
     {
         public MetaHttpRequestHeaderMatchInList()
         {
-            Delimiter = Constants.Common.DEFAULT_DELIMITER;
+            Delimiter = cts.Common.DEFAULT_DELIMITER;
             List = string.Empty;
         }
         public string Header { get; set; }

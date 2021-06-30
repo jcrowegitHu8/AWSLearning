@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
+using cts = FeatureFlag.Shared.Constants;
 
 namespace FeatureFlagApi.Services
 {
@@ -27,20 +27,20 @@ namespace FeatureFlagApi.Services
         {
             if (string.IsNullOrWhiteSpace(meta))
             {
-                return Constants.Common.THIS_FEATURE_IS_OFF;
+                return cts.Common.THIS_FEATURE_IS_OFF;
             }
 
             var metaRuleObject = JsonConvert.DeserializeObject<MetaJwtParseMatchInList>(meta);
             var headerValue = _authHeaderService.GetTokenOnly();
             if (string.IsNullOrWhiteSpace(headerValue))
             {
-                return Constants.Common.THIS_FEATURE_IS_OFF;
+                return cts.Common.THIS_FEATURE_IS_OFF;
             }
 
             var handler = new JwtSecurityTokenHandler();
             if (!TryGetJWTPayloadAsString(headerValue, out var jsonString))
             {
-                return Constants.Common.THIS_FEATURE_IS_OFF;
+                return cts.Common.THIS_FEATURE_IS_OFF;
             }
             var jsonObject = JToken.Parse(jsonString);
 
@@ -51,11 +51,11 @@ namespace FeatureFlagApi.Services
                     && metaRuleObject.List.ToUpper().Split(metaRuleObject.Delimiter)
                     .Contains(jsonToken.ToString().ToUpper()))
                 {
-                    return Constants.Common.THIS_FEATURE_IS_ON;
+                    return cts.Common.THIS_FEATURE_IS_ON;
                 }
             }
 
-            return Constants.Common.THIS_FEATURE_IS_OFF;
+            return cts.Common.THIS_FEATURE_IS_OFF;
         }
 
         private bool TryGetJWTPayloadAsString(string jwtInput, out string result)
@@ -108,7 +108,7 @@ namespace FeatureFlagApi.Services
     {
         public MetaJwtParseMatchInList()
         {
-            Delimiter = Constants.Common.DEFAULT_DELIMITER;
+            Delimiter = cts.Common.DEFAULT_DELIMITER;
         }
         public string Path { get; set; }
         public string List { get; set; }

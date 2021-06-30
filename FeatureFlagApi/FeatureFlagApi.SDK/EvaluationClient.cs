@@ -1,4 +1,4 @@
-﻿using FeatureFlagApi.SDK.Models;
+﻿using FeatureFlag.Shared.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

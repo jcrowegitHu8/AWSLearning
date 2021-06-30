@@ -8,9 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+using FeatureFlag.Shared.Models;
+using cts = FeatureFlag.Shared.Constants;
 
 namespace FeatureFlagApi.Services
 {
@@ -58,7 +57,7 @@ namespace FeatureFlagApi.Services
                      in the backend.  If the request asked for it
                     we tell them it's 'theFeatureIsOff'
                     */
-                    result.Features.Add(new Model.FeatureEvaluationResult
+                    result.Features.Add(new FeatureEvaluationResult
                     {
                         Name = requestedFeature,
                         IsOn = DEFAULT_FOR_ANY_FEATURE_THAT_DOES_NOT_EXIST
@@ -67,7 +66,7 @@ namespace FeatureFlagApi.Services
                 }
 
                 var rulesResultOfIsFeatureOn = RunAllRules(featureToEvaluate.Rules);
-                result.Features.Add(new Model.FeatureEvaluationResult
+                result.Features.Add(new FeatureEvaluationResult
                 {
                     Name = requestedFeature,
                     IsOn = rulesResultOfIsFeatureOn
@@ -98,7 +97,7 @@ namespace FeatureFlagApi.Services
                         runningResult = false;
                         break;
                 }
-                if (runningResult == Constants.Common.THIS_FEATURE_IS_OFF)
+                if (runningResult == cts.Common.THIS_FEATURE_IS_OFF)
                 {
                     /*We only support inclusive AND for the running of multiple rules.
                      * The moment a rule evaluates to 'theFeatureIsOff'
@@ -116,11 +115,11 @@ namespace FeatureFlagApi.Services
         {
             if (!Boolean.Parse(meta))
             {
-                return Constants.Common.THIS_FEATURE_IS_OFF;
+                return cts.Common.THIS_FEATURE_IS_OFF;
             }
             else
             {
-                return Constants.Common.THIS_FEATURE_IS_ON;
+                return cts.Common.THIS_FEATURE_IS_ON;
             }
         }
 

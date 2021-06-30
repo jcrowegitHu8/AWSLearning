@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FeatureFlagApi.Model
+namespace FeatureFlag.Shared.Models
 {
     public class FeatureEvaluationResult
     {

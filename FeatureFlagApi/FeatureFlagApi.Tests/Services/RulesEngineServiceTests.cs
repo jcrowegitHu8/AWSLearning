@@ -1,4 +1,5 @@
 ﻿using FakeItEasy;
+using FeatureFlag.Shared.Models;
 using FeatureFlagApi.Model;
 using FeatureFlagApi.Services;
 using FluentAssertions;

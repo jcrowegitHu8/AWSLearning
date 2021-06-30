@@ -6,6 +6,7 @@ using FeatureFlagApi.Model;
 using FeatureFlagApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using FeatureFlag.Shared.Models;
 
 namespace FeatureFlagApi.Controllers
 {

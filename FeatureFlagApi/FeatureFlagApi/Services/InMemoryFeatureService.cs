@@ -10,6 +10,7 @@ using YamlDotNet.Serialization.NamingConventions;
 using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
+using tv = FeatureFlag.Shared.Constants.TestValues;
 
 namespace FeatureFlagApi.Services
 {
@@ -21,17 +22,17 @@ namespace FeatureFlagApi.Services
             Features = new List<Feature>
             {
                 new Feature{
-                    Name=Constants.TestValues.FeatureNames.ALWAYS_OFF,
+                    Name=tv.FeatureNames.ALWAYS_OFF,
                     Rules = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="false"} } },
                 new Feature{
-                    Name=Constants.TestValues.FeatureNames.ALWAYS_ON,
+                    Name=tv.FeatureNames.ALWAYS_ON,
                     Rules = new List<Rule>{ new Rule { Type = ruleType.boolean, Meta="true"} } },
-                new Feature{ Name=Constants.TestValues.FeatureNames.JWT_EMAIL_PARSE,
+                new Feature{ Name=tv.FeatureNames.JWT_EMAIL_PARSE,
                     Rules = new List<Rule>{
                         new Rule { Type = ruleType.jwtPayloadClaimMatchesValueInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", }
                     },
                 },
-                new Feature{ Name=Constants.TestValues.FeatureNames.JWT_EMAIL_PARSE_AND_ENVIRONMENT_HEADER,
+                new Feature{ Name=tv.FeatureNames.JWT_EMAIL_PARSE_AND_ENVIRONMENT_HEADER,
                     Rules = new List<Rule>{
                         new Rule { Type = ruleType.jwtPayloadClaimMatchesValueInList, Meta= "{ \"Path\":\"$.email\", \"List\":\"testuser1@example.com,testuser2@example.com,johndoe@example.com\"}", },
                         new Rule { Type = ruleType.httpRequestHeaderMatchInList, Meta="{ \"Header\":\"x-env\", \"List\":\"prod\" }", }

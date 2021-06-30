@@ -10,8 +10,9 @@ using Amazon.Lambda.TestUtilities;
 using Amazon.Lambda.APIGatewayEvents;
 
 using Newtonsoft.Json;
-using FeatureFlagApi.Model;
 using FluentAssertions;
+using FeatureFlag.Shared.Models;
+using cts = FeatureFlag.Shared.Constants;
 
 namespace FeatureFlagApi.Tests.Controllers
 {
@@ -41,28 +42,28 @@ namespace FeatureFlagApi.Tests.Controllers
 
                 AssertFeatureResult(
                     featureList,
-                    Constants.TestValues.FeatureNames.NOT_DEFINED,
-                    Constants.Common.THIS_FEATURE_IS_OFF);
+                    cts.TestValues.FeatureNames.NOT_DEFINED,
+                    cts.Common.THIS_FEATURE_IS_OFF);
 
                 AssertFeatureResult(
                     featureList,
-                    Constants.TestValues.FeatureNames.ALWAYS_ON,
-                    Constants.Common.THIS_FEATURE_IS_ON);
+                    cts.TestValues.FeatureNames.ALWAYS_ON,
+                    cts.Common.THIS_FEATURE_IS_ON);
 
                 AssertFeatureResult(
                     featureList,
-                    Constants.TestValues.FeatureNames.ALWAYS_OFF,
-                    Constants.Common.THIS_FEATURE_IS_OFF);
+                    cts.TestValues.FeatureNames.ALWAYS_OFF,
+                    cts.Common.THIS_FEATURE_IS_OFF);
 
                 AssertFeatureResult(
                     featureList,
-                    Constants.TestValues.FeatureNames.JWT_EMAIL_PARSE,
-                    Constants.Common.THIS_FEATURE_IS_ON);
+                    cts.TestValues.FeatureNames.JWT_EMAIL_PARSE,
+                    cts.Common.THIS_FEATURE_IS_ON);
 
                 AssertFeatureResult(
                     featureList,
-                    Constants.TestValues.FeatureNames.JWT_EMAIL_PARSE_AND_ENVIRONMENT_HEADER,
-                    Constants.Common.THIS_FEATURE_IS_ON);
+                    cts.TestValues.FeatureNames.JWT_EMAIL_PARSE_AND_ENVIRONMENT_HEADER,
+                    cts.Common.THIS_FEATURE_IS_ON);
 
             }
 
