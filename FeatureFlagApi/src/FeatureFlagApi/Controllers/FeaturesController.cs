@@ -38,7 +38,7 @@ namespace FeatureFlagApi.Controllers
         /// <param name="request"></param>
         /// <returns>Just the list of featues and their ON/OFF status</returns>
         [HttpPost]
-        public EvaluationResponse Evaluate(EvaluationRequest request)
+        public EvaluationResponse Evaluate([FromBody]EvaluationRequest request)
         {
             var result = rulesEngineService.Run(request);
             return result;
