@@ -9,17 +9,22 @@ using System.Threading.Tasks;
 
 namespace FeatureFlagApi.SDK
 {
-    public class EvaluationClient
+    public interface IFeatureFlagService
     {
+        bool FeatureIsOn(string featureName);
+    }
 
+    public class FeatureFlagService : IFeatureFlagService
+    {
+        private FeatureFlagSDKOptions _options;
         private readonly HttpClient client = new HttpClient();
         private const bool THIS_FEATURE_IS_OFF = false;
 
-        private FeatureFlagSDKOptions _options;
         private EvaluationResponse _evaluationResponse;
 
-        public EvaluationClient()
+        public FeatureFlagService(FeatureFlagSDKOptions options)
         {
+            _options = options;
             client = new HttpClient();
         }
 
@@ -27,23 +32,20 @@ namespace FeatureFlagApi.SDK
         /// Exposed for integration testing
         /// </summary>
         /// <param name="httpClient"></param>
-        public EvaluationClient(HttpClient httpClient)
+        public FeatureFlagService(HttpClient httpClient, FeatureFlagSDKOptions options)
         {
             client = httpClient;
-        }
-
-        public void Initialize(FeatureFlagSDKOptions options)
-        {
             _options = options;
         }
 
+
         public bool FeatureIsOn(string featureName)
         {
-            if(string.IsNullOrWhiteSpace(featureName))
+            if (string.IsNullOrWhiteSpace(featureName))
             {
                 return THIS_FEATURE_IS_OFF;
             }
-            if(_evaluationResponse == null)
+            if (_evaluationResponse == null)
             {
                 //TODO need to add thead locker
                 var request = new EvaluationRequest
@@ -53,7 +55,7 @@ namespace FeatureFlagApi.SDK
                 var json = JsonConvert.SerializeObject(request);
                 var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
                 //TODO Fill the features;
-                var postTask = Task.Run(() => client.PostAsync(_options.FeatureFlagApiUrl, stringContent));
+                var postTask = Task.Run(() => client.PostAsync(_options.ApiUrl +"/api/features", stringContent));
                 postTask.Wait();
                 var response = postTask.Result;
 
@@ -63,12 +65,12 @@ namespace FeatureFlagApi.SDK
                 _evaluationResponse = JsonConvert.DeserializeObject<EvaluationResponse>(responseString);
             }
 
-            if(_evaluationResponse == null && _evaluationResponse.Features == null)
+            if (_evaluationResponse == null && _evaluationResponse.Features == null)
             {
                 return THIS_FEATURE_IS_OFF;
             }
             var result = _evaluationResponse.Features.FirstOrDefault(o => o.Name.Equals(featureName, StringComparison.OrdinalIgnoreCase));
-            if(result != null)
+            if (result != null)
             {
                 return result.IsOn;
             }
@@ -80,7 +82,7 @@ namespace FeatureFlagApi.SDK
     public class FeatureFlagSDKOptions
     {
         public int CacheTimeInSeconds { get; set; }
-        public string FeatureFlagApiUrl { get; set; }
+        public string ApiUrl { get; set; }
         public List<string> FeaturesToTrack { get; set; }
     }
 }

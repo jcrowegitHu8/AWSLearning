@@ -18,8 +18,7 @@ namespace FeatureFlagApi.SDK.Tests
         [Fact]
         public void A_Valid_On_feature_should_return_true()
         {
-            this.BuildForIntegration(Client)
-                .WithDefaultInitialization();
+            this.BuildForIntegration(Client);
             
             var result = Target.FeatureIsOn("Sample_AlwaysOn");
             result.Should().BeTrue();
@@ -28,8 +27,7 @@ namespace FeatureFlagApi.SDK.Tests
         [Fact]
         public void An_UnDefined_feature_should_return_false()
         {
-            this.BuildForIntegration(Client)
-                .WithDefaultInitialization();
+            this.BuildForIntegration(Client);
 
             var result = Target.FeatureIsOn("Sample_NotAFeature");
             result.Should().BeFalse();
@@ -38,8 +36,7 @@ namespace FeatureFlagApi.SDK.Tests
         [Fact]
         public void A_Null_feature_should_return_false()
         {
-            this.BuildForIntegration(Client)
-                .WithDefaultInitialization();
+            this.BuildForIntegration(Client);
 
             var result = Target.FeatureIsOn(null);
             result.Should().BeFalse();
@@ -48,8 +45,7 @@ namespace FeatureFlagApi.SDK.Tests
         [Fact]
         public void An_Empty_String_feature_should_return_false()
         {
-            this.BuildForIntegration(Client)
-                .WithDefaultInitialization();
+            this.BuildForIntegration(Client);
 
             var result = Target.FeatureIsOn(string.Empty);
             result.Should().BeFalse();
@@ -58,7 +54,7 @@ namespace FeatureFlagApi.SDK.Tests
 
     public class EvaluationClientTestBase 
     {
-        public EvaluationClient Target { get; set; }
+        public FeatureFlagService Target { get; set; }
 
         public EvaluationClientTestBase()
         {
@@ -66,19 +62,16 @@ namespace FeatureFlagApi.SDK.Tests
 
         public EvaluationClientTestBase BuildForIntegration(HttpClient inMemoryApiClient)
         {
-            this.Target = new EvaluationClient(inMemoryApiClient);
+            var options = new FeatureFlagSDKOptions
+            {
+                FeaturesToTrack = new List<string> { "Sample_AlwaysOn" },
+                ApiUrl = "/api/features"
+            };
+
+            this.Target = new FeatureFlagService(inMemoryApiClient, options);
             return this;
         }
 
-        public EvaluationClientTestBase WithDefaultInitialization()
-        {
-            Target.Initialize(new FeatureFlagSDKOptions
-            {
-                FeaturesToTrack = new List<string> { "Sample_AlwaysOn" },
-                FeatureFlagApiUrl = "/api/features"
-            });
-            return this;
-        }
 
         }
 }

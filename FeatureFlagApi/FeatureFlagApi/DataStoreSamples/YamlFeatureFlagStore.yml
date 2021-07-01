@@ -1,5 +1,8 @@
 ﻿Version: YamlFeatureFlagStoreExample 1.0.2
 Features:
+- Name: Sample_BackendApi_Feature
+  Rules:
+  - Meta: true
 - Name: Sample_AlwaysOff
   Rules:
   - Meta: false
