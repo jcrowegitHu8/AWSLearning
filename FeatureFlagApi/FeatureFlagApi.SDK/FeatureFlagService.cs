@@ -1,10 +1,12 @@
-﻿using FeatureFlag.Shared.Models;
+﻿using FeatureFlag.Shared.Helper;
+using FeatureFlag.Shared.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FeatureFlagApi.SDK
@@ -12,6 +14,9 @@ namespace FeatureFlagApi.SDK
     public interface IFeatureFlagService
     {
         bool FeatureIsOn(string featureName);
+        bool FeatureIsOff(string featureName);
+        Task<bool> FeatureIsOnAsync(string featureName, CancellationToken cancellationToken = default);
+        Task<bool> FeatureIsOffAsync(string featureName, CancellationToken cancellationToken = default);
     }
 
     public class FeatureFlagService : IFeatureFlagService
@@ -26,6 +31,7 @@ namespace FeatureFlagApi.SDK
         {
             _options = options;
             client = new HttpClient();
+            client.BaseAddress = new Uri(_options.ApiBaseUrl);
         }
 
         /// <summary>
@@ -38,8 +44,23 @@ namespace FeatureFlagApi.SDK
             _options = options;
         }
 
-
         public bool FeatureIsOn(string featureName)
+        {
+            return AsyncHelper.RunSync<bool>(() => FeatureIsOnAsync(featureName));
+        }
+
+        public bool FeatureIsOff(string featureName)
+        {
+            return !AsyncHelper.RunSync<bool>(() => FeatureIsOnAsync(featureName));
+        }
+
+        public async Task<bool> FeatureIsOffAsync(string featureName, CancellationToken cancellationToken = default)
+        {
+            return !await FeatureIsOnAsync(featureName, cancellationToken);
+        }
+
+
+            public async Task<bool> FeatureIsOnAsync(string featureName, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(featureName))
             {
@@ -55,13 +76,9 @@ namespace FeatureFlagApi.SDK
                 var json = JsonConvert.SerializeObject(request);
                 var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
                 //TODO Fill the features;
-                var postTask = Task.Run(() => client.PostAsync(_options.ApiUrl +"/api/features", stringContent));
-                postTask.Wait();
-                var response = postTask.Result;
+                var response = await client.PostAsync("/api/features", stringContent, cancellationToken);
 
-                var readTask = Task.Run(() => response.Content.ReadAsStringAsync());
-                readTask.Wait();
-                var responseString = readTask.Result;
+                var responseString = await response.Content.ReadAsStringAsync();
                 _evaluationResponse = JsonConvert.DeserializeObject<EvaluationResponse>(responseString);
             }
 
@@ -82,7 +99,10 @@ namespace FeatureFlagApi.SDK
     public class FeatureFlagSDKOptions
     {
         public int CacheTimeInSeconds { get; set; }
-        public string ApiUrl { get; set; }
+        /// <summary>
+        /// Only specify this if you don't pass in the HttpClient Yourself.
+        /// </summary>
+        public string ApiBaseUrl { get; set; }
         public List<string> FeaturesToTrack { get; set; }
     }
 }

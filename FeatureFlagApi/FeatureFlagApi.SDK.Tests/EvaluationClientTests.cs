@@ -65,7 +65,7 @@ namespace FeatureFlagApi.SDK.Tests
             var options = new FeatureFlagSDKOptions
             {
                 FeaturesToTrack = new List<string> { "Sample_AlwaysOn" },
-                ApiUrl = "/api/features"
+                ApiBaseUrl = "/api/features"
             };
 
             this.Target = new FeatureFlagService(inMemoryApiClient, options);

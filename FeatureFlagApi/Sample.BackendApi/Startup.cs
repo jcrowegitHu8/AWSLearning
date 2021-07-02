@@ -35,7 +35,7 @@ namespace Sample.BackendApi
             services.AddHttpContextAccessor();
             var featureFlag = new FeatureFlagService(new FeatureFlagSDKOptions
             {
-                ApiUrl = Configuration.GetValue<string>("FeatureFlagApiUrl"),
+                ApiBaseUrl = Configuration.GetValue<string>("FeatureFlagApiUrl"),
                 FeaturesToTrack = Configuration.GetValue<string>("Features").Split(',').ToList(),
             });
             services.AddSingleton<IFeatureFlagService>(featureFlag);

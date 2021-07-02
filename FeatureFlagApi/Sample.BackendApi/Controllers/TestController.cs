@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Sample.BackendApi.Controllers
@@ -21,14 +22,32 @@ namespace Sample.BackendApi.Controllers
             _featureFlagService = featureFlagService;
         }
 
+        /// <summary>
+        /// Get Sync Example
+        /// </summary>
+        /// <returns></returns>
+        [Route("Sync")]
         [HttpGet]
         public String Get()
         {
             var demo = "Sample_BackendApi_Feature";
-            if (_featureFlagService.FeatureIsOn(demo))
-                return $"{demo} is ON";
+            var result = _featureFlagService.FeatureIsOn(demo);
+            return $"Sync - {demo} is {result}";
 
-            return $"{demo} is OFF";
+        }
+
+        /// <summary>
+        /// Get Async Example with CancellationToken
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [Route("Async")]
+        [HttpGet]
+        public async Task<String> Get(CancellationToken cancellationToken)
+        {
+            var demo = "Sample_BackendApi_Feature";
+            var result =await  _featureFlagService.FeatureIsOnAsync(demo, cancellationToken);
+            return $"Async - {demo} is {result}";
         }
     }
 }
