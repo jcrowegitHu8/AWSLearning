@@ -1,5 +1,6 @@
 ﻿using FeatureFlag.Shared.Helper;
 using FeatureFlag.Shared.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,11 +23,12 @@ namespace FeatureFlagApi.SDK
     public class FeatureFlagService : IFeatureFlagService
     {
         private FeatureFlagSDKOptions _options;
-        private readonly HttpClient client = new HttpClient();
+        private readonly HttpClient _client = new HttpClient();
         private const bool THIS_FEATURE_IS_OFF = false;
         private DateTime _nextRefreshTime = DateTime.MinValue;
-        private readonly TimeSpan _minimumRefreshInterval = TimeSpan.FromMinutes(5);
+        private readonly TimeSpan _minimumRefreshInterval = TimeSpan.FromSeconds(5);
         private static readonly ReaderWriterLockSlim _rwLockSlim = new ReaderWriterLockSlim();
+        private readonly ILogger _logger;
 
 
         private EvaluationResponse _evaluationResponse;
@@ -35,12 +37,31 @@ namespace FeatureFlagApi.SDK
         {
             Guard.AgainstNull(options,nameof(options));
             Guard.AgainstNull(options.HttpClient,nameof(_options.HttpClient));
+            Guard.AgainstNull(options.Logger, nameof(_options.Logger));
 
             _options = options;
-            client = _options.HttpClient;
-            if ( _options.RefreshInterval != null)
+            _logger = _options.Logger;
+            _client = _options.HttpClient;
+            _logger.LogDebug("{ThreadId} FeatureFlagApi: {url}", ThreadId, _client.BaseAddress);
+            if ( _options.RefreshInterval != null
+                && _options.RefreshInterval >= _minimumRefreshInterval)
             {
+                _logger.LogDebug("{ThreadId} Refresh interval is {seconds} seconds.", ThreadId, _options.RefreshInterval.TotalSeconds);
                 _minimumRefreshInterval = _options.RefreshInterval;
+            }
+            else
+            {
+                _logger.LogDebug("{ThreadId} Refresh interval is the default 5 minutes", ThreadId);
+                _minimumRefreshInterval = TimeSpan.FromMinutes(5);
+            }
+            _logger.LogTrace("{ThreadId} Constructed successfully.", ThreadId);
+        }
+
+        private int ThreadId
+        {
+            get
+            {
+                return Thread.CurrentThread.ManagedThreadId;
             }
         }
 
@@ -83,6 +104,7 @@ namespace FeatureFlagApi.SDK
             _rwLockSlim.EnterReadLock();
             try
             {
+                _logger.LogTrace("{ThreadId} Reading Features.", ThreadId);
                 var result = _evaluationResponse.Features
                     .FirstOrDefault(o => o.Name.Equals(featureName, StringComparison.OrdinalIgnoreCase));
                 if (result != null)
@@ -103,6 +125,7 @@ namespace FeatureFlagApi.SDK
         {
             if (_evaluationResponse != null)
             {
+                _logger.LogTrace("{ThreadId} Checking Refresh Interval", ThreadId);
                 var isTimeToRefresh = _nextRefreshTime <= DateTime.UtcNow;
                 if (!isTimeToRefresh)
                 {
@@ -110,13 +133,14 @@ namespace FeatureFlagApi.SDK
                 }
             }
 
+            _logger.LogTrace("{ThreadId} Fetching Data", ThreadId);
             var request = new EvaluationRequest
             {
                 Features = _options.FeaturesToTrack
             };
             var json = JsonConvert.SerializeObject(request);
             var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
-            var response = await client.PostAsync("/api/features", stringContent, cancellationToken);
+            var response = await _client.PostAsync("/api/features", stringContent, cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -124,11 +148,13 @@ namespace FeatureFlagApi.SDK
                 _rwLockSlim.EnterWriteLock();
                 try
                 {
+                    _logger.LogTrace("{ThreadId} Writing Data", ThreadId);
                     _evaluationResponse = JsonConvert.DeserializeObject<EvaluationResponse>(responseString);
 
                 }
                 finally
                 {
+                    _nextRefreshTime = DateTime.UtcNow.Add(_minimumRefreshInterval);
                     _rwLockSlim.ExitWriteLock();
                 }
             }
@@ -143,5 +169,7 @@ namespace FeatureFlagApi.SDK
 
         public List<string> FeaturesToTrack { get; set; }
         public HttpClient HttpClient { get; set; }
+
+        public ILogger Logger { get; set; }
     }
 }

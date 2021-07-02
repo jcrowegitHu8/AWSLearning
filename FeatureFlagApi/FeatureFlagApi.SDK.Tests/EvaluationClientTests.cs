@@ -1,27 +1,32 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace FeatureFlagApi.SDK.Tests
 {
     public class EvaluationClientTests : EvaluationClientTestBase, IClassFixture<WebApplicationFactory<FeatureFlagApi.Startup>>
     {
         public HttpClient Client { get; }
+        private readonly ITestOutputHelper _testOutputHelper;
 
-        public EvaluationClientTests(WebApplicationFactory<FeatureFlagApi.Startup> fixture)
+        public EvaluationClientTests(WebApplicationFactory<FeatureFlagApi.Startup> fixture,
+            ITestOutputHelper testOutputHelper)
         {
             Client = fixture.CreateClient();
+            _testOutputHelper = testOutputHelper;
         }
 
         [Fact]
         public void Thread_safty_test()
         {
-            this.BuildForIntegration(Client);
+            this.BuildForThreadSafeIntegration(Client, _testOutputHelper);
             var count = 20;
             Thread[] threads = new Thread[count];
 
@@ -50,8 +55,8 @@ namespace FeatureFlagApi.SDK.Tests
         [Fact]
         public void A_Valid_On_feature_should_return_true()
         {
-            this.BuildForIntegration(Client);
-            
+            this.BuildForIntegration(Client, _testOutputHelper);
+
             var result = Target.FeatureIsOn("Sample_AlwaysOn");
             result.Should().BeTrue();
         }
@@ -59,7 +64,7 @@ namespace FeatureFlagApi.SDK.Tests
         [Fact]
         public void An_UnDefined_feature_should_return_false()
         {
-            this.BuildForIntegration(Client);
+            this.BuildForIntegration(Client, _testOutputHelper);
 
             var result = Target.FeatureIsOn("Sample_NotAFeature");
             result.Should().BeFalse();
@@ -68,7 +73,7 @@ namespace FeatureFlagApi.SDK.Tests
         [Fact]
         public void A_Null_feature_should_return_false()
         {
-            this.BuildForIntegration(Client);
+            this.BuildForIntegration(Client, _testOutputHelper);
 
             var result = Target.FeatureIsOn(null);
             result.Should().BeFalse();
@@ -77,14 +82,14 @@ namespace FeatureFlagApi.SDK.Tests
         [Fact]
         public void An_Empty_String_feature_should_return_false()
         {
-            this.BuildForIntegration(Client);
+            this.BuildForIntegration(Client, _testOutputHelper);
 
             var result = Target.FeatureIsOn(string.Empty);
             result.Should().BeFalse();
         }
     }
 
-    public class EvaluationClientTestBase 
+    public class EvaluationClientTestBase
     {
         public FeatureFlagService Target { get; set; }
 
@@ -92,25 +97,31 @@ namespace FeatureFlagApi.SDK.Tests
         {
         }
 
-        public EvaluationClientTestBase BuildForIntegration(HttpClient inMemoryApiClient)
+        public EvaluationClientTestBase BuildForIntegration(HttpClient inMemoryApiClient
+            , ITestOutputHelper testOutputHelper)
         {
+            var logger = XUnitLogger.CreateLogger<FeatureFlagService>(testOutputHelper);
             var options = new FeatureFlagSDKOptions
             {
                 FeaturesToTrack = new List<string> { "Sample_AlwaysOn" },
-                HttpClient = inMemoryApiClient
+                HttpClient = inMemoryApiClient,
+                Logger = logger
             };
 
             this.Target = new FeatureFlagService(options);
             return this;
         }
 
-        public EvaluationClientTestBase BuildForThreadSafeIntegration(HttpClient inMemoryApiClient)
+        public EvaluationClientTestBase BuildForThreadSafeIntegration(HttpClient inMemoryApiClient,
+            ITestOutputHelper testOutputHelper)
         {
+            var logger = XUnitLogger.CreateLogger<FeatureFlagService>(testOutputHelper);
             var options = new FeatureFlagSDKOptions
             {
                 FeaturesToTrack = new List<string> { "Sample_AlwaysOn" },
-                RefreshInterval = TimeSpan.FromSeconds(2),
-                HttpClient = inMemoryApiClient
+                RefreshInterval = TimeSpan.FromSeconds(5),
+                HttpClient = inMemoryApiClient,
+                Logger = logger
             };
 
             this.Target = new FeatureFlagService(options);
