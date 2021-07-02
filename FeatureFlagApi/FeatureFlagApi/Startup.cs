@@ -20,6 +20,8 @@ namespace FeatureFlagApi
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,9 +32,23 @@ namespace FeatureFlagApi
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
+            ConfigureCors(services);
             services.AddControllers();
             ConfigureSwaggerDocument(services);
             ConfigureDI(services);
+        }
+
+        private void ConfigureCors(IServiceCollection services)
+        {
+            var origins = Configuration.GetValue<string>("CommaDelimitedCorsList").Split(',');
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins(origins);
+                                  });
+            });
         }
 
         public void ConfigureDI(IServiceCollection services)
@@ -76,7 +92,7 @@ namespace FeatureFlagApi
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
