@@ -25,7 +25,7 @@ namespace FeatureFlagApi.SDK
         private readonly HttpClient client = new HttpClient();
         private const bool THIS_FEATURE_IS_OFF = false;
         private DateTime _nextRefreshTime = DateTime.MinValue;
-        private static readonly TimeSpan MinimumRefreshInterval = TimeSpan.FromSeconds(5);
+        private readonly TimeSpan _minimumRefreshInterval = TimeSpan.FromMinutes(5);
         private static readonly ReaderWriterLockSlim _rwLockSlim = new ReaderWriterLockSlim();
 
 
@@ -33,20 +33,17 @@ namespace FeatureFlagApi.SDK
 
         public FeatureFlagService(FeatureFlagSDKOptions options)
         {
+            Guard.AgainstNull(options,nameof(options));
+            Guard.AgainstNull(options.HttpClient,nameof(_options.HttpClient));
+
             _options = options;
-            client = new HttpClient();
-            client.BaseAddress = new Uri(_options.ApiBaseUrl);
+            client = _options.HttpClient;
+            if ( _options.RefreshInterval != null)
+            {
+                _minimumRefreshInterval = _options.RefreshInterval;
+            }
         }
 
-        /// <summary>
-        /// Exposed for integration testing
-        /// </summary>
-        /// <param name="httpClient"></param>
-        public FeatureFlagService(HttpClient httpClient, FeatureFlagSDKOptions options)
-        {
-            client = httpClient;
-            _options = options;
-        }
 
         public bool FeatureIsOn(string featureName)
         {
@@ -135,18 +132,16 @@ namespace FeatureFlagApi.SDK
                     _rwLockSlim.ExitWriteLock();
                 }
             }
-            _nextRefreshTime = DateTime.UtcNow.Add(MinimumRefreshInterval);
+            _nextRefreshTime = DateTime.UtcNow.Add(_minimumRefreshInterval);
         }
 
     }
 
     public class FeatureFlagSDKOptions
     {
-        public int CacheTimeInSeconds { get; set; }
-        /// <summary>
-        /// Only specify this if you don't pass in the HttpClient Yourself.
-        /// </summary>
-        public string ApiBaseUrl { get; set; }
+        public TimeSpan RefreshInterval { get; set; }
+
         public List<string> FeaturesToTrack { get; set; }
+        public HttpClient HttpClient { get; set; }
     }
 }

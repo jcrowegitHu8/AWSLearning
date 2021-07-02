@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Sample.BackendApi
@@ -33,16 +34,14 @@ namespace Sample.BackendApi
         public void ConfigureDI(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri(Configuration.GetValue<string>("FeatureFlagApiUrl"));
             var featureFlag = new FeatureFlagService(new FeatureFlagSDKOptions
             {
-                ApiBaseUrl = Configuration.GetValue<string>("FeatureFlagApiUrl"),
                 FeaturesToTrack = Configuration.GetValue<string>("Features").Split(',').ToList(),
+                HttpClient = httpClient
             });
             services.AddSingleton<IFeatureFlagService>(featureFlag);
-            //services.AddSingleton<IFeatureRepository, YamlFileFeatureService>();
-            //services.AddSingleton<IRequestHeaderService, RequestHeaderService>();
-            //services.AddScoped<IHttpRequestHeaderMatchInListRuleService, HttpRequestHeaderMatchInListRuleService>();
-            //services.AddScoped<IJwtPayloadParseMatchInListRuleService, JwtPayloadParseMatchInListRuleService>();
 
         }
 

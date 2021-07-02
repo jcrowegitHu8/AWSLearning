@@ -97,13 +97,26 @@ namespace FeatureFlagApi.SDK.Tests
             var options = new FeatureFlagSDKOptions
             {
                 FeaturesToTrack = new List<string> { "Sample_AlwaysOn" },
-                ApiBaseUrl = "/api/features"
+                HttpClient = inMemoryApiClient
             };
 
-            this.Target = new FeatureFlagService(inMemoryApiClient, options);
+            this.Target = new FeatureFlagService(options);
+            return this;
+        }
+
+        public EvaluationClientTestBase BuildForThreadSafeIntegration(HttpClient inMemoryApiClient)
+        {
+            var options = new FeatureFlagSDKOptions
+            {
+                FeaturesToTrack = new List<string> { "Sample_AlwaysOn" },
+                RefreshInterval = TimeSpan.FromSeconds(2),
+                HttpClient = inMemoryApiClient
+            };
+
+            this.Target = new FeatureFlagService(options);
             return this;
         }
 
 
-        }
+    }
 }
