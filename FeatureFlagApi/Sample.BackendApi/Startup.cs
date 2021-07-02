@@ -34,12 +34,18 @@ namespace Sample.BackendApi
         public void ConfigureDI(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+
+            var serviceProvider = services.BuildServiceProvider();
+            var logger = serviceProvider.GetService<ILogger<Startup>>();
+            services.AddSingleton(typeof(ILogger), logger);
+
             var httpClient = new HttpClient();
             httpClient.BaseAddress = new Uri(Configuration.GetValue<string>("FeatureFlagApiUrl"));
             var featureFlag = new FeatureFlagService(new FeatureFlagSDKOptions
             {
                 FeaturesToTrack = Configuration.GetValue<string>("Features").Split(',').ToList(),
-                HttpClient = httpClient
+                HttpClient = httpClient,
+                Logger = logger
             });
             services.AddSingleton<IFeatureFlagService>(featureFlag);
 

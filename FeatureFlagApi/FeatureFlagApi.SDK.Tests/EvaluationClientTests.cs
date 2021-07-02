@@ -47,9 +47,19 @@ namespace FeatureFlagApi.SDK.Tests
             }
         }
 
+
         private void WorkForMultiThreadedTest()
         {
             Target.FeatureIsOn("Sample_AlwaysOn");
+        }
+
+        [Fact]
+        public void DoNothing_should_work_and_always_return_false()
+        {
+            this.BuildWithNoFeaturesIntegration(Client, _testOutputHelper);
+
+            var result = Target.FeatureIsOn("Sample_AlwaysOn");
+            result.Should().BeFalse();
         }
 
         [Fact]
@@ -93,8 +103,11 @@ namespace FeatureFlagApi.SDK.Tests
     {
         public FeatureFlagService Target { get; set; }
 
+        public FeatureFlagSDKOptions options { get; set; }
+
         public EvaluationClientTestBase()
         {
+
         }
 
         public EvaluationClientTestBase BuildForIntegration(HttpClient inMemoryApiClient
@@ -119,6 +132,22 @@ namespace FeatureFlagApi.SDK.Tests
             var options = new FeatureFlagSDKOptions
             {
                 FeaturesToTrack = new List<string> { "Sample_AlwaysOn" },
+                RefreshInterval = TimeSpan.FromSeconds(5),
+                HttpClient = inMemoryApiClient,
+                Logger = logger
+            };
+
+            this.Target = new FeatureFlagService(options);
+            return this;
+        }
+
+        public EvaluationClientTestBase BuildWithNoFeaturesIntegration(HttpClient inMemoryApiClient,
+           ITestOutputHelper testOutputHelper)
+        {
+            var logger = XUnitLogger.CreateLogger<FeatureFlagService>(testOutputHelper);
+            var options = new FeatureFlagSDKOptions
+            {
+                FeaturesToTrack = new List<string> { },
                 RefreshInterval = TimeSpan.FromSeconds(5),
                 HttpClient = inMemoryApiClient,
                 Logger = logger
