@@ -24,6 +24,10 @@ namespace FeatureFlagApi.SDK
         private FeatureFlagSDKOptions _options;
         private readonly HttpClient client = new HttpClient();
         private const bool THIS_FEATURE_IS_OFF = false;
+        private DateTime _nextRefreshTime = DateTime.MinValue;
+        private static readonly TimeSpan MinimumRefreshInterval = TimeSpan.FromSeconds(5);
+        private static readonly ReaderWriterLockSlim _rwLockSlim = new ReaderWriterLockSlim();
+
 
         private EvaluationResponse _evaluationResponse;
 
@@ -60,38 +64,78 @@ namespace FeatureFlagApi.SDK
         }
 
 
-            public async Task<bool> FeatureIsOnAsync(string featureName, CancellationToken cancellationToken = default)
+        public async Task<bool> FeatureIsOnAsync(string featureName, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(featureName))
             {
                 return THIS_FEATURE_IS_OFF;
             }
-            if (_evaluationResponse == null)
-            {
-                //TODO need to add thead locker
-                var request = new EvaluationRequest
-                {
-                    Features = _options.FeaturesToTrack
-                };
-                var json = JsonConvert.SerializeObject(request);
-                var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
-                //TODO Fill the features;
-                var response = await client.PostAsync("/api/features", stringContent, cancellationToken);
 
-                var responseString = await response.Content.ReadAsStringAsync();
-                _evaluationResponse = JsonConvert.DeserializeObject<EvaluationResponse>(responseString);
-            }
+            await PopulateFeatureListAsync(cancellationToken);
 
             if (_evaluationResponse == null && _evaluationResponse.Features == null)
             {
                 return THIS_FEATURE_IS_OFF;
             }
-            var result = _evaluationResponse.Features.FirstOrDefault(o => o.Name.Equals(featureName, StringComparison.OrdinalIgnoreCase));
-            if (result != null)
+
+            return ThreadSafeSeachCollectionForFeatureState(featureName);
+        }
+
+        private bool ThreadSafeSeachCollectionForFeatureState(string featureName)
+        {
+            _rwLockSlim.EnterReadLock();
+            try
             {
-                return result.IsOn;
+                var result = _evaluationResponse.Features
+                    .FirstOrDefault(o => o.Name.Equals(featureName, StringComparison.OrdinalIgnoreCase));
+                if (result != null)
+                {
+                    return result.IsOn;
+                }
+            }
+            finally
+            {
+                _rwLockSlim.ExitReadLock();
             }
             return THIS_FEATURE_IS_OFF;
+        }
+
+
+
+        private async Task PopulateFeatureListAsync(CancellationToken cancellationToken = default)
+        {
+            if (_evaluationResponse != null)
+            {
+                var isTimeToRefresh = _nextRefreshTime <= DateTime.UtcNow;
+                if (!isTimeToRefresh)
+                {
+                    return;
+                }
+            }
+
+            var request = new EvaluationRequest
+            {
+                Features = _options.FeaturesToTrack
+            };
+            var json = JsonConvert.SerializeObject(request);
+            var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+            var response = await client.PostAsync("/api/features", stringContent, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseString = await response.Content.ReadAsStringAsync();
+                _rwLockSlim.EnterWriteLock();
+                try
+                {
+                    _evaluationResponse = JsonConvert.DeserializeObject<EvaluationResponse>(responseString);
+
+                }
+                finally
+                {
+                    _rwLockSlim.ExitWriteLock();
+                }
+            }
+            _nextRefreshTime = DateTime.UtcNow.Add(MinimumRefreshInterval);
         }
 
     }
