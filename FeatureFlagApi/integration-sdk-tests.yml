@@ -1,0 +1,38 @@
+version: "3.4"  # optional since v1.27.0
+services:
+  featureflag-api:
+    container_name: featureflag-api
+    image: featureflag-api
+    build:
+      context: .
+      dockerfile: ./FeatureFlagApi/Dockerfile
+    ports:
+      - "5001:80"
+
+  sample-backend-api:
+    container_name: sample-backend-api
+    image: sample-backend-api
+    build:
+      context: .
+      dockerfile: ./Sample.BackendApi/Dockerfile
+    environment:
+      - FeatureFlagApiUrl=http://featureflag-api
+    ports:
+      - "5002:80"
+    depends_on:
+      - featureflag-api
+
+  integration-tests:
+    container_name: integration-tests
+    image: integration-tests
+    build:
+      context: .
+      dockerfile: ./Integration-Dockerfile
+    environment:
+        - SampleBackendApiUrl=http://sample-backend-api
+    command: bash /app/wait-for-backend-then-test.sh http://featureflag-api 200 30
+    depends_on:
+        - featureflag-api
+        - sample-backend-api
+
+    # docker compose -f .\docker-compose-integration-sdk-tests.yml up
