@@ -75,7 +75,7 @@ namespace Sample.Consumer3_1.Controllers
                 }
                 var errorStatus = $"{(int)response.StatusCode}:{response.StatusCode.ToString()} - {response.ReasonPhrase}" ;
                 var errorPayload = await response.Content.ReadAsStringAsync();
-                return StatusCode((int)HttpStatusCode.ServiceUnavailable, $"{errorStatus} | {errorPayload}");
+                return StatusCode((int)HttpStatusCode.ServiceUnavailable, $"{errorStatus} | {fullUrl} |{errorPayload}");
             }
             catch (Exception ex)
             {

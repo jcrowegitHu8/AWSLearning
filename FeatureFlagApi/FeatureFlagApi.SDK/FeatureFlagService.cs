@@ -155,7 +155,7 @@ namespace FeatureFlagApi.SDK
 
             try
             {
-                var response = await _client.PostAsync("/api/features", stringContent, cancellationToken);
+                var response = await _client.PostAsync("features", stringContent, cancellationToken);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -172,6 +172,11 @@ namespace FeatureFlagApi.SDK
                         _nextRefreshTime = DateTime.UtcNow.Add(_minimumRefreshInterval);
                         _rwLockSlim.ExitWriteLock();
                     }
+                }
+                else
+                {
+                    var errorStatus = $"{(int)response.StatusCode}:{response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                    _logger.LogError("{HttpErrorReason} | {Method} {RequestUri}", errorStatus, response.RequestMessage.Method, response.RequestMessage.RequestUri);
                 }
             }
             catch (Exception ex)
