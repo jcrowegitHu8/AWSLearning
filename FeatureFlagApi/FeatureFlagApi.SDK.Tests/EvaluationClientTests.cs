@@ -20,6 +20,8 @@ namespace FeatureFlagApi.SDK.Tests
             ITestOutputHelper testOutputHelper)
         {
             Client = fixture.CreateClient();
+            var url = Client.BaseAddress.AbsoluteUri.ToString() + "api/";
+            Client.BaseAddress = new Uri(url);
             _testOutputHelper = testOutputHelper;
         }
 

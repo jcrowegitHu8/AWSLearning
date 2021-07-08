@@ -1,0 +1,41 @@
+version: "3.4"  # optional since v1.27.0
+services:
+  featureflag-api:
+    container_name: featureflag-api
+    image: featureflag-api
+    build:
+      context: .
+      dockerfile: ./FeatureFlagApi/Dockerfile
+    environment:
+      - Logging:LogLevel:Microsoft=Error
+    ports:
+      - "5001:80"
+
+  sample-3-1-api:
+    container_name: sample-3-1-api
+    image: sample-3-1-api
+    build:
+      context: .
+      dockerfile: ./Sample.Consumer3_1/Dockerfile
+    environment:
+      - Logging:LogLevel:Default=Trace
+      - FeatureFlagApiUrl=http://featureflag-api
+    ports:
+      - "5002:80"
+    depends_on:
+      - featureflag-api
+
+  integration-tests:
+    container_name: integration-tests
+    image: integration-tests
+    build:
+      context: .
+      dockerfile: ./Integration-Dockerfile
+    environment:
+        - SampleBackendApiUrl=http://sample-3-1-api
+    command: bash /app/wait-for-backend-then-test.sh http://sample-3-1-api/test/sync 200 30
+    depends_on:
+        - featureflag-api
+        - sample-3-1-api
+
+    # docker compose -f .\integration-sdk-tests.yml up

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UserSecretsId>738ede37-c49d-497f-b123-96847a523c1d</UserSecretsId>
+    <UserSecretsId>da774069-4175-4770-8442-4877b196885f</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FeatureFlag.Shared\FeatureFlag.Shared.csproj" />
     <ProjectReference Include="..\FeatureFlagApi.SDK\FeatureFlagApi.SDK.csproj" />
   </ItemGroup>
 

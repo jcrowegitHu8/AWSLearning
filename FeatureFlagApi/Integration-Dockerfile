@@ -1,0 +1,7 @@
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+
+COPY ./Sample.BackendApi.Tests ./app/Sample.BackendApi.Tests
+COPY ./Scripts ./app
+RUN chmod 777 /app/wait-for-backend-then-test.sh
+WORKDIR /app/Sample.BackendApi.Tests
+RUN dotnet restore

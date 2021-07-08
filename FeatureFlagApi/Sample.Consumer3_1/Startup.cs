@@ -13,7 +13,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Sample.BackendApi
+namespace Sample.Consumer3_1
 {
     public class Startup
     {
@@ -33,7 +33,6 @@ namespace Sample.BackendApi
 
         public void ConfigureDI(IServiceCollection services)
         {
-            services.AddHttpContextAccessor();
 
             var serviceProvider = services.BuildServiceProvider();
             var logger = serviceProvider.GetService<ILogger<Startup>>();
@@ -59,7 +58,7 @@ namespace Sample.BackendApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

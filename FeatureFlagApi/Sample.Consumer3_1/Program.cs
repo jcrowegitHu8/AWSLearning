@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Sample.BackendApi
+namespace Sample.Consumer3_1
 {
     public class Program
     {

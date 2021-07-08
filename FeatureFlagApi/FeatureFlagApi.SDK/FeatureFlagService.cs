@@ -103,7 +103,7 @@ namespace FeatureFlagApi.SDK
 
             await PopulateFeatureListAsync(cancellationToken);
 
-            if (_evaluationResponse == null && _evaluationResponse.Features == null)
+            if (_evaluationResponse == null || _evaluationResponse.Features == null)
             {
                 return THIS_FEATURE_IS_OFF;
             }
@@ -155,7 +155,7 @@ namespace FeatureFlagApi.SDK
 
             try
             {
-                var response = await _client.PostAsync("/api/features", stringContent, cancellationToken);
+                var response = await _client.PostAsync("features", stringContent, cancellationToken);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -173,10 +173,15 @@ namespace FeatureFlagApi.SDK
                         _rwLockSlim.ExitWriteLock();
                     }
                 }
+                else
+                {
+                    var errorStatus = $"{(int)response.StatusCode}:{response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                    _logger.LogError("{HttpErrorReason} | {Method} {RequestUri}", errorStatus, response.RequestMessage.Method, response.RequestMessage.RequestUri);
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(ex, "{ThreadId} Unable to get feature list. {Message}", ThreadId);
+                _logger.LogCritical(ex, "{ThreadId} Unable to get feature list.", ThreadId);
             }
             _nextRefreshTime = DateTime.UtcNow.Add(_minimumRefreshInterval);
         }
