@@ -1,3 +1,4 @@
+using FeatureFlagApi.SDK;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Sample.Consumer3_1
@@ -26,6 +28,26 @@ namespace Sample.Consumer3_1
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            ConfigureDI(services);
+        }
+
+        public void ConfigureDI(IServiceCollection services)
+        {
+
+            var serviceProvider = services.BuildServiceProvider();
+            var logger = serviceProvider.GetService<ILogger<Startup>>();
+            services.AddSingleton(typeof(ILogger), logger);
+
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri(Configuration.GetValue<string>("FeatureFlagApiUrl"));
+            var featureFlag = new FeatureFlagService(new FeatureFlagSDKOptions
+            {
+                FeaturesToTrack = Configuration.GetValue<string>("Features").Split(',').ToList(),
+                HttpClient = httpClient,
+                Logger = logger
+            });
+            services.AddSingleton<IFeatureFlagService>(featureFlag);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,7 +58,7 @@ namespace Sample.Consumer3_1
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

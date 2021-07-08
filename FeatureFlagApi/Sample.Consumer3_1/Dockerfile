@@ -8,6 +8,8 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
 COPY ["Sample.Consumer3_1/Sample.Consumer3_1.csproj", "Sample.Consumer3_1/"]
+COPY ["FeatureFlagApi.SDK/FeatureFlagApi.SDK.csproj", "FeatureFlagApi.SDK/"]
+COPY ["FeatureFlag.Shared/FeatureFlag.Shared.csproj", "FeatureFlag.Shared/"]
 RUN dotnet restore "Sample.Consumer3_1/Sample.Consumer3_1.csproj"
 COPY . .
 WORKDIR "/src/Sample.Consumer3_1"

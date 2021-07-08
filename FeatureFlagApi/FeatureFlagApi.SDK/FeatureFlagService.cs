@@ -103,7 +103,7 @@ namespace FeatureFlagApi.SDK
 
             await PopulateFeatureListAsync(cancellationToken);
 
-            if (_evaluationResponse == null && _evaluationResponse.Features == null)
+            if (_evaluationResponse == null || _evaluationResponse.Features == null)
             {
                 return THIS_FEATURE_IS_OFF;
             }
@@ -176,7 +176,7 @@ namespace FeatureFlagApi.SDK
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(ex, "{ThreadId} Unable to get feature list. {Message}", ThreadId);
+                _logger.LogCritical(ex, "{ThreadId} Unable to get feature list.", ThreadId);
             }
             _nextRefreshTime = DateTime.UtcNow.Add(_minimumRefreshInterval);
         }

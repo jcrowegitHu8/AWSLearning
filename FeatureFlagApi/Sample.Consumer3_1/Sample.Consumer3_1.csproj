@@ -10,5 +10,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FeatureFlag.Shared\FeatureFlag.Shared.csproj" />
+    <ProjectReference Include="..\FeatureFlagApi.SDK\FeatureFlagApi.SDK.csproj" />
+  </ItemGroup>
+
 
 </Project>
