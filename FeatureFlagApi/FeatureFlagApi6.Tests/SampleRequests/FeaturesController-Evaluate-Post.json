@@ -1,0 +1,39 @@
+{
+  "resource": "/{proxy+}",
+  "path": "/api/Features",
+  "httpMethod": "POST",
+  "headers": {
+    "x-env": "Prod",
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJlbWFpbCI6ImpvaG5kb2VAZXhhbXBsZS5jb20ifQ.d6Tv2Xy6UUYdSpTQAKEj3mZJF5Q14OdlT3BbUyuZiuU",
+    "content-type": "application/json"
+  },
+  "queryStringParameters": {
+  },
+  "pathParameters": {
+    "proxy": "api/Features"
+  },
+  "stageVariables": null,
+  "requestContext": {
+    "accountId": "AAAAAAAAAAAA",
+    "resourceId": "5agfss",
+    "stage": "test-invoke-stage",
+    "requestId": "test-invoke-request",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": "AAAAAAAAAAAA",
+      "cognitoIdentityId": null,
+      "caller": "BBBBBBBBBBBB",
+      "apiKey": "test-invoke-api-key",
+      "sourceIp": "test-invoke-source-ip",
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": "arn:aws:iam::AAAAAAAAAAAA:root",
+      "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_102)",
+      "user": "AAAAAAAAAAAA"
+    },
+    "resourcePath": "/{proxy+}",
+    "httpMethod": "POST",
+    "apiId": "t2yh6sjnmk"
+  },
+  "body": "{\r\n    \"Features\": [\r\n      \"Sample_FeatureNotDefinedInDataStore\",\r\n      \"Sample_AlwaysOn\",\r\n      \"Sample_AlwaysOff\",\r\n      \"Sample_JwtEmailParse\",\r\n      \"Sample_JwtEmailParseAndHeaderParse_MultipleRules\"\r\n    ]\r\n  }"
+}

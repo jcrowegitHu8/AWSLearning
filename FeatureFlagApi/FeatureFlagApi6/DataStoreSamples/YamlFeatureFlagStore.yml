@@ -1,0 +1,28 @@
+﻿Version: YamlFeatureFlagStoreExample 6.0.2
+Features:
+- Name: Sample_BackendApi_Feature
+  Rules:
+  - Meta: true
+- Name: Sample_AlwaysOff
+  Rules:
+  - Meta: false
+- Name: Sample_AlwaysOn
+  Rules:
+  - Meta: true
+- Name: Sample_JwtEmailParse
+  Rules:
+  - Type: jwtPayloadClaimMatchesValueInList
+    Meta: '{ "Path":"$.email", "List":"testuser1@example.com,testuser2@example.com,johndoe@example.com"}'
+- Name: Sample_JwtEmailParseAndHeaderParse_MultipleRules
+  Rules:
+  - Type: jwtPayloadClaimMatchesValueInList
+    Meta: '{ "Path":"$.email", "List":"testuser1@example.com,testuser2@example.com,johndoe@example.com"}'
+  - Type: httpRequestHeaderMatchInList
+    Meta: '{ "Header":"x-env", "List":"prod" }'
+- Name: Sample_JwtEmailParseAndHeaderParse_MultipleRules2
+  Rules:
+  - Type: jwtPayloadClaimMatchesValueInList
+    Meta: '{ "Path":"$.email", "List":"testuser1@example.com,testuser2@example.com,johndoe@example.com"}'
+  - Type: httpRequestHeaderMatchInList
+    Meta: '{ "Header":"x-env", "List":"prod,qa,uat" }'
+
