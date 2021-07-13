@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FeatureFlagApi5</name>
+    </assembly>
+    <members>
+        <member name="M:FeatureFlagApi5.Controllers.FeaturesController.Get">
+            <summary>
+            Get All features currently in the FeatureStore
+            </summary>
+            <returns>All FeatureStore information</returns>
+        </member>
+        <member name="M:FeatureFlagApi5.Controllers.FeaturesController.Evaluate(FeatureFlag.Shared.Models.EvaluationRequest)">
+            <summary>
+            Determine if the list of requested features is ON/OFF
+            </summary>
+            <param name="request"></param>
+            <returns>Just the list of featues and their ON/OFF status</returns>
+        </member>
+        <member name="M:FeatureFlagApi5.Controllers.TestsController.Ping">
+            <summary>
+            Determine if the API is able to process requests 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:FeatureFlagApi5.Controllers.TestsController.Connectivity">
+            <summary>
+            Determines if the API can successfully connect to dependents systems (i.e Database)
+            </summary>
+            <returns>Info of success or failure or a correlationId to go search your logs for the details of the failure </returns>
+        </member>
+        <member name="T:FeatureFlagApi5.LambdaEntryPoint">
+            <summary>
+            This class extends from APIGatewayProxyFunction which contains the method FunctionHandlerAsync which is the 
+            actual Lambda function entry point. The Lambda handler field should be set to
+            
+            FeatureFlagApi5::FeatureFlagApi5.LambdaEntryPoint::FunctionHandlerAsync
+            </summary>
+        </member>
+        <member name="M:FeatureFlagApi5.LambdaEntryPoint.Init(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            The builder has configuration, logging and Amazon API Gateway already configured. The startup class
+            needs to be configured in this method using the UseStartup() method.
+            </summary>
+            <param name="builder"></param>
+        </member>
+        <member name="M:FeatureFlagApi5.LambdaEntryPoint.Init(Microsoft.Extensions.Hosting.IHostBuilder)">
+            <summary>
+            Use this override to customize the services registered with the IHostBuilder. 
+            
+            It is recommended not to call ConfigureWebHostDefaults to configure the IWebHostBuilder inside this method.
+            Instead customize the IWebHostBuilder in the Init(IWebHostBuilder) overload.
+            </summary>
+            <param name="builder"></param>
+        </member>
+        <member name="T:FeatureFlagApi5.LocalEntryPoint">
+            <summary>
+            The Main function can be used to run the ASP.NET Core application locally using the Kestrel webserver.
+            </summary>
+        </member>
+        <member name="P:FeatureFlagApi5.Model.Rule.Meta">
+            <summary>
+            Either a simple value or a JSON object to allow the rule to be evaluated
+            </summary>
+        </member>
+        <member name="F:FeatureFlagApi5.Model.ruleType.undefined">
+            <summary>
+            The rule value just specifies on/off
+            </summary>
+        </member>
+        <member name="P:FeatureFlagApi5.Model.JwtParseMatchInList.Path">
+            <summary>
+            The JSON path to run against a decripted standard JWT
+            </summary>
+        </member>
+        <member name="P:FeatureFlagApi5.Model.JwtParseMatchInList.List">
+            <summary>
+            The comma delimited list of value that are acceptable exact matches
+            </summary>
+        </member>
+        <member name="P:FeatureFlagApi5.Model.FeatureStoreModel.Version">
+            <summary>
+            An indicator of the version of the information in the feature store.
+            You could make this a semantic version 1.0.2 
+            OR modify this code to create a hash.  It's just a way to help
+            troubleshoot things.
+            </summary>
+        </member>
+        <member name="T:FeatureFlagApi5.SwaggerUI.AuthorizationHeader">
+            <summary>
+            For Swagger UI we want to allow a JWT Bearer token to be set for all API requests as
+            an OPTIONAL header
+            </summary>
+        </member>
+    </members>
+</doc>
