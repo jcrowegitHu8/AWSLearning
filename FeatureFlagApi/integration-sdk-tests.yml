@@ -1,5 +1,13 @@
 version: "3.4"  # optional since v1.27.0
 services:
+#docker run --name local-redis -p 6379:6379 -d redis
+
+  redis-local:
+    container_name: redis-local
+    image: redis
+    ports:
+      - "6379:6379"
+
   featureflag-api:
     container_name: featureflag-api
     image: featureflag-api
@@ -37,5 +45,6 @@ services:
     depends_on:
         - featureflag-api
         - sample-3-1-api
+        - redis-local
 
     # docker compose -f .\integration-sdk-tests.yml up

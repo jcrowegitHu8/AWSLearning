@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 
 namespace FeatureFlagApi
 {
@@ -38,6 +39,13 @@ namespace FeatureFlagApi
             ConfigureDI(services);
         }
 
+        public void ConfigureRedis(IServiceCollection services)
+        {
+            var readWriteConnection = Configuration.GetValue<string>("redis_write_url");
+            IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(readWriteConnection);
+            services.AddScoped(s => redis.GetDatabase());
+        }
+
         private void ConfigureCors(IServiceCollection services)
         {
             var origins = Configuration.GetValue<string>("CommaDelimitedCorsList").Split(',');
@@ -55,10 +63,12 @@ namespace FeatureFlagApi
         {
             services.AddHttpContextAccessor();
             services.AddScoped<IRulesEngineService, RulesEngineService>();
-            services.AddSingleton<IFeatureRepository, YamlFileFeatureService>();
+            services.AddScoped<IFeatureRepository, RedisFeatureService>();
+            //services.AddSingleton<IFeatureRepository, YamlFileFeatureService>();
             services.AddSingleton<IRequestHeaderService, RequestHeaderService>();
             services.AddScoped<IHttpRequestHeaderMatchInListRuleService, HttpRequestHeaderMatchInListRuleService>();
             services.AddScoped<IJwtPayloadParseMatchInListRuleService, JwtPayloadParseMatchInListRuleService>();
+            ConfigureRedis(services);
             
         }
 
