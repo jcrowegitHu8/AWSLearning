@@ -16,6 +16,7 @@ services:
       dockerfile: ./FeatureFlagApi/Dockerfile
     environment:
       - Logging:LogLevel:Microsoft=Error
+      - Logging:LogLevel:Default=Trace
     ports:
       - "5001:80"
 

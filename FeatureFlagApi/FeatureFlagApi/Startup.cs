@@ -61,6 +61,10 @@ namespace FeatureFlagApi
 
         public void ConfigureDI(IServiceCollection services)
         {
+            var serviceProvider = services.BuildServiceProvider();
+            var logger = serviceProvider.GetService<ILogger<Startup>>();
+            services.AddSingleton(typeof(ILogger), logger);
+
             services.AddHttpContextAccessor();
             services.AddScoped<IRulesEngineService, RulesEngineService>();
             services.AddScoped<IFeatureRepository, RedisFeatureService>();
