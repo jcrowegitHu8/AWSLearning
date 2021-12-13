@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FeatureFlagApi.Authentication;
+using FeatureFlagApi.Authorization;
+using FeatureFlagApi.Logging;
 using FeatureFlagApi.Services;
 using FeatureFlagApi.SwaggerUI;
 using Microsoft.AspNetCore.Builder;
@@ -16,6 +19,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
+using cnst = FeatureFlag.Shared.Constants;
 
 namespace FeatureFlagApi
 {
@@ -35,8 +39,35 @@ namespace FeatureFlagApi
         {
             ConfigureCors(services);
             services.AddControllers();
+            ConfigureLogging(services);
             ConfigureSwaggerDocument(services);
             ConfigureDI(services);
+            ConfigureAuthoirzationPolicies(services);
+        }
+
+        public void ConfigureAuthoirzationPolicies(IServiceCollection services)
+        {
+            services.AddAuthentication(cnst.AuthenticationSchemes.BASIC)
+                .AddScheme<BasicAuthenticationOptions, CustomAuthenticationHandler>(cnst.AuthenticationSchemes.BASIC, null);
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
+                    cnst.AuthorizationPolicies.TENANT_ID_REQUIRED,
+                    policy =>
+                    {
+                        policy.AddRequirements(new RequiredClaimPolicy());
+                        policy.AuthenticationSchemes = new List<string> { cnst.AuthenticationSchemes.BASIC };
+                    });
+            });
+        }
+
+        public void ConfigureLogging(IServiceCollection services)
+        {
+            var loggingOptions = new LambdaLoggerOptions(Configuration);
+            services.AddLogging(loggingBuilder => loggingBuilder.AddLambdaLogger(loggingOptions));
+
+            services.AddSingleton<IAWSStructuredLogger, AWSStructuredLogger>();
         }
 
         public void ConfigureRedis(IServiceCollection services)

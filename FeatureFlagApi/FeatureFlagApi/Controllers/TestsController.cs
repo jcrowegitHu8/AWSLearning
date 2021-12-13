@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FeatureFlagApi.Logging;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FeatureFlagApi.Controllers
@@ -9,6 +10,13 @@ namespace FeatureFlagApi.Controllers
     [Route("api/[controller]")]
     public class TestsController : ControllerBase
     {
+        private readonly IAWSStructuredLogger _logger;
+
+        public TestsController(IAWSStructuredLogger logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         /// Determine if the API is able to process requests 
         /// </summary>
@@ -30,5 +38,17 @@ namespace FeatureFlagApi.Controllers
         {
             return "Success";
         }
+
+        [Route("structuredlogging")]
+        [HttpGet]
+        public string StructuredLogging()
+        {
+            _logger.LogInfo("Info before any enrichment");
+            _logger.EnrichWithCorrelationId(Guid.NewGuid());
+            _logger.LogError("Error Level Logging after enriched with correlationid.");
+            return "Success";
+        }
+
+
     }
 }

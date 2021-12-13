@@ -31,6 +31,12 @@ namespace FeatureFlagApi.Services
 
         }
 
+        public bool JWTTokenHasTenantClaim()
+        {
+            //todo add some JWT code or allow a JSON path to see if a value exists.
+            return true;
+        }
+
         public string GetFirstNotNullOrWhitespaceValue(string key)
         {
             if (!_httpContextAccessor.HttpContext.Request.Headers.TryGetValue(key, out var outHeader))
@@ -52,6 +58,7 @@ namespace FeatureFlagApi.Services
     {
         string GetTokenOnly();
         string GetFirstNotNullOrWhitespaceValue(string key);
+        bool JWTTokenHasTenantClaim();
     }
 
 }
